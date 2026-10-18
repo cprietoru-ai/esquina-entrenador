@@ -1,0 +1,966 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#16110f">
+<meta name="description" content="La esquina del entrenador de boxeo: biblioteca de ejercicios, bloques y planes, y un temporizador de asaltos para dar la clase. Gratis, sin cuentas y sin conexión.">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/icon-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Esquina del Entrenador</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@600;700&display=swap">
+<style>
+:root{
+  --bg:#f4f1ee; --surface:#ffffff; --ink:#1d1715; --muted:#6c615c; --line:#ddd5cf;
+  --esq:#16110f; --esq-ink:#ffffff; --rojo:#c8102e; --azul:#1f5fbf; --oro:#c99a2e; --chip:#efe9e4;
+  --trabajo:#c8102e; --descanso:#1d7a46; --prep:#3a3330;
+  --display:"Bebas Neue",Impact,"Arial Narrow",sans-serif;
+  --body:"Barlow","Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  --label:"Barlow Condensed","Arial Narrow",Arial,sans-serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#120e0d; --surface:#1c1615; --ink:#efe8e4; --muted:#ab9f99; --line:#352c29;
+  --esq:#0a0807; --chip:#2a2220; --rojo:#ff4d5e; --azul:#6aa3ff; --oro:#e6bf5c; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#120e0d; --surface:#1c1615; --ink:#efe8e4; --muted:#ab9f99; --line:#352c29;
+  --esq:#0a0807; --chip:#2a2220; --rojo:#ff4d5e; --azul:#6aa3ff; --oro:#e6bf5c; color-scheme:dark}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.4;margin:0;overscroll-behavior-y:none}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--esq)}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+:focus-visible{outline:3px solid var(--oro);outline-offset:2px}
+a{color:var(--rojo)}
+header{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--esq);color:var(--esq-ink)}
+.hd{display:flex;align-items:center;gap:10px;padding:10px 16px 4px;max-width:1100px;margin:0 auto}
+.hd img{width:38px;height:38px;border-radius:8px}
+.hd h1{font-family:var(--display);font-weight:400;font-size:28px;letter-spacing:1px;margin:0;line-height:1}
+.hd .sub{font-family:var(--label);font-size:12px;letter-spacing:1.5px;opacity:.8;text-transform:uppercase}
+.hd .sp{flex:1}
+.tabs{display:flex;max-width:1100px;margin:0 auto;padding:0 8px;overflow-x:auto;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tabs a{color:var(--esq-ink);opacity:.7;text-decoration:none;font-family:var(--label);font-weight:700;font-size:16px;letter-spacing:1px;text-transform:uppercase;padding:10px 12px;border-bottom:3px solid transparent;white-space:nowrap}
+.tabs a[aria-current="page"]{opacity:1;border-bottom-color:var(--rojo)}
+.tabs .cnt{background:var(--rojo);color:#fff;border-radius:999px;padding:0 6px;font-size:12px;margin-left:4px}
+main{max-width:1100px;margin:0 auto;padding:14px 16px calc(40px + env(safe-area-inset-bottom,0px))}
+h2.t{font-family:var(--display);font-weight:400;font-size:34px;letter-spacing:.5px;margin:4px 0 6px;line-height:1.05;text-wrap:balance}
+h3.s{font-family:var(--label);font-size:15px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin:18px 0 8px}
+.btn{border:0;border-radius:10px;padding:10px 14px;font-weight:600;background:var(--chip);color:var(--ink);display:inline-flex;align-items:center;gap:6px;text-decoration:none}
+.btn.pri{background:var(--rojo);color:#fff}
+.btn.osc{background:var(--esq);color:#fff}
+.btn.dan{background:transparent;color:var(--rojo);border:1.5px solid var(--rojo)}
+.btn.sm{padding:6px 10px;font-size:14px}
+.btn.big{font-size:18px;padding:14px 18px}
+.bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.card{background:var(--surface);border:1.5px solid var(--line);border-radius:12px;padding:12px 14px;display:flex;flex-direction:column;gap:6px;min-width:0}
+a.card,button.card{text-align:left;color:inherit;text-decoration:none;width:100%}
+.card h3{font-family:var(--label);font-size:19px;font-weight:700;margin:0;line-height:1.15;text-wrap:balance}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:10px}
+.list{display:flex;flex-direction:column;gap:8px}
+.meta{display:flex;flex-wrap:wrap;gap:5px;font-size:13px;color:var(--muted);align-items:center}
+.tag{font-family:var(--label);font-weight:700;font-size:12px;letter-spacing:.8px;text-transform:uppercase;color:var(--ink);background:var(--chip);border-radius:4px;padding:1px 6px}
+.tag.r{background:var(--rojo);color:#fff}.tag.v{background:var(--descanso);color:#fff}.tag.o{background:var(--oro);color:#1d1715}.tag.l{background:#d97706;color:#fff}
+.not{font-family:var(--mono);font-size:14px;background:var(--chip);border-radius:6px;padding:3px 7px;word-break:break-word}
+.note{font-size:13px;color:var(--muted)}
+.empty{border:2px dashed var(--line);border-radius:12px;padding:24px;text-align:center;color:var(--muted)}
+.empty b{display:block;color:var(--ink);font-size:17px;margin-bottom:4px}
+.obj{background:color-mix(in srgb,var(--oro) 16%,var(--surface));border-left:4px solid var(--oro);padding:8px 12px;border-radius:0 8px 8px 0;margin:6px 0}
+.vig{background:color-mix(in srgb,var(--rojo) 10%,var(--surface));border-left:4px solid var(--rojo);padding:8px 12px;border-radius:0 8px 8px 0;margin:6px 0}
+.obj b,.vig b{font-family:var(--label);letter-spacing:1px;text-transform:uppercase;font-size:13px;display:block}
+.err{background:color-mix(in srgb,var(--rojo) 12%,var(--surface));border:1.5px solid var(--rojo);border-radius:8px;padding:8px 12px;margin:8px 0}
+.ok{background:color-mix(in srgb,var(--descanso) 12%,var(--surface));border:1.5px solid var(--descanso);border-radius:8px;padding:8px 12px;margin:8px 0}
+.back{background:none;border:0;color:var(--rojo);font-weight:700;padding:4px 0;margin-bottom:4px}
+.md h2,.md h3,.md h4{font-family:var(--label);margin:14px 0 4px;line-height:1.15}
+.md h3{font-size:19px}.md h4{font-size:17px;color:var(--muted)}
+.md p{margin:6px 0}.md ul,.md ol{margin:4px 0;padding-left:22px}
+.md li{margin:2px 0}.md li.in{margin-left:18px;list-style:circle}
+.md .callout{background:var(--chip);border-radius:8px;padding:8px 12px;margin:6px 0}
+.md a.int{color:var(--rojo);font-weight:600;text-decoration:none;border-bottom:1.5px solid color-mix(in srgb,var(--rojo) 35%,transparent)}
+.md .todo{list-style:none;margin-left:-20px}
+.props{display:grid;grid-template-columns:max-content minmax(0,1fr);gap:4px 12px;font-size:14px;margin:8px 0}
+.props dt{font-family:var(--label);font-weight:700;letter-spacing:.5px;color:var(--muted)}
+.props dd{margin:0}
+.rels a{display:inline-block;margin:2px 4px 2px 0}
+.chiprow{display:flex;flex-wrap:wrap;gap:6px}
+.chip{border:1.5px solid var(--line);background:var(--surface);border-radius:999px;padding:6px 11px;font-family:var(--label);font-weight:600;font-size:14px;letter-spacing:.3px;text-decoration:none;color:var(--ink)}
+.chip[aria-pressed="true"]{background:var(--esq);color:#fff;border-color:var(--esq)}
+:root[data-theme="dark"] .chip[aria-pressed="true"]{background:var(--rojo);border-color:var(--rojo)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .chip[aria-pressed="true"]{background:var(--rojo);border-color:var(--rojo)}}
+.seg{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
+.seg::-webkit-scrollbar{display:none}
+details.fil{background:var(--surface);border:1.5px solid var(--line);border-radius:12px;padding:8px 12px;margin:8px 0}
+details.fil summary{font-family:var(--label);font-weight:700;letter-spacing:1px;text-transform:uppercase;cursor:pointer;padding:4px 0}
+.fgrp{margin:8px 0}.fgrp>div:first-child{font-family:var(--label);font-weight:700;font-size:13px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
+input[type=text],input[type=search],input[type=email],input[type=number],select,textarea{width:100%;background:var(--surface);border:1.5px solid var(--line);border-radius:8px;padding:9px 10px;font-size:16px}
+textarea{min-height:84px;resize:vertical}
+label.f{display:flex;flex-direction:column;gap:4px;font-family:var(--label);font-weight:700;font-size:13px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin:10px 0}
+label.f .req{color:var(--rojo)}
+.form{background:var(--surface);border:1.5px solid var(--line);border-radius:12px;padding:12px 14px;margin:10px 0}
+.pick{max-height:260px;overflow:auto;border:1.5px solid var(--line);border-radius:8px;padding:6px;display:flex;flex-direction:column;gap:4px}
+.pick label{display:flex;gap:8px;align-items:flex-start;font-family:var(--body);text-transform:none;letter-spacing:0;font-weight:500;color:var(--ink);font-size:15px;padding:4px}
+.ord{display:flex;flex-direction:column;gap:6px}
+.ord .it{display:grid;grid-template-columns:28px minmax(0,1fr) auto;gap:8px;align-items:center;background:var(--chip);border-radius:8px;padding:6px 8px}
+.ord .n{width:26px;height:26px;border-radius:50%;background:var(--rojo);color:#fff;display:flex;align-items:center;justify-content:center;font-family:var(--display);font-size:18px}
+.ord button{border:1.5px solid var(--line);background:var(--surface);border-radius:6px;width:34px;height:34px;font-weight:700}
+.fase{font-family:var(--label);font-weight:700;letter-spacing:1px;text-transform:uppercase;font-size:13px;color:var(--muted);margin:10px 0 4px}
+.prog{display:flex;flex-direction:column;gap:4px}
+.prog div{padding:6px 10px;border-radius:8px;background:var(--surface);border:1.5px solid var(--line)}
+.prog div.aqui{border-color:var(--rojo);box-shadow:inset 4px 0 0 var(--rojo)}
+.dg{background:var(--surface);border:1.5px solid var(--line);border-radius:12px;padding:10px;margin:10px 0}
+.dg svg{width:100%;height:auto;display:block;max-width:520px;margin:0 auto}
+.ab{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.ab>div{border-radius:10px;padding:8px 10px;color:#fff}
+.ab .a{background:var(--rojo)}.ab .b{background:var(--azul)}
+.ab b{font-family:var(--display);font-size:22px;font-weight:400;letter-spacing:1px;display:block}
+.toast{max-width:min(92vw,520px);text-align:center;position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:999px;font-weight:600;z-index:60}
+.banner{background:var(--oro);color:#1d1715;border-radius:10px;padding:10px 12px;margin-bottom:12px;font-weight:600}
+/* ---------- Modo clase ---------- */
+#clase{position:fixed;inset:0;z-index:50;background:var(--prep);color:#fff;display:none;flex-direction:column;
+  padding:calc(8px + env(safe-area-inset-top,0px)) 14px calc(10px + env(safe-area-inset-bottom,0px));
+  touch-action:none;overscroll-behavior:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;transition:background .25s}
+#clase.on{display:flex}
+#clase.trabajo{background:var(--trabajo)}#clase.descanso{background:var(--descanso)}#clase.fin{background:#000}
+#clase .top{display:flex;align-items:flex-start;gap:8px}
+#clase .top .tt{flex:1;min-width:0}
+#clase .fz{font-family:var(--label);letter-spacing:1.5px;text-transform:uppercase;font-size:14px;opacity:.85}
+#clase .bt{font-family:var(--display);font-size:clamp(24px,min(6.5vw,7vh),52px);line-height:1;margin:2px 0;text-wrap:balance}
+#clase .ic{background:rgba(255,255,255,.16);border:0;color:#fff;border-radius:12px;min-width:48px;height:48px;font-size:22px;font-weight:700}
+#clase .mid{flex:1;overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;min-height:0}
+#clase .est{font-family:var(--display);font-size:clamp(28px,min(9vw,8vh),80px);letter-spacing:3px;line-height:1}
+#clase .rel{font-family:var(--display);font-weight:400;font-size:clamp(90px,min(34vw,38vh),330px);line-height:.9;font-variant-numeric:tabular-nums;letter-spacing:2px}
+#clase .eti{font-family:var(--label);font-weight:700;font-size:clamp(18px,4.6vw,34px);line-height:1.15;max-width:950px;text-wrap:balance}
+#clase .rnd{font-family:var(--label);font-weight:700;font-size:clamp(18px,4.4vw,30px);opacity:.9;margin-top:4px}
+#clase .barra{height:8px;background:rgba(255,255,255,.25);border-radius:4px;overflow:hidden;margin:8px 0}
+#clase .barra i{display:block;height:100%;background:#fff;width:0}
+#clase .pz{font-size:15px;opacity:.95;max-height:24vh;overflow:auto;background:rgba(0,0,0,.18);border-radius:10px;padding:6px 10px;touch-action:pan-y}
+#clase .pz div{padding:2px 0}
+#clase .ctl{display:grid;grid-template-columns:1fr 1.6fr 1fr;gap:10px;margin-top:8px}
+#clase .ctl button{height:72px;border-radius:16px;border:0;background:rgba(255,255,255,.18);color:#fff;font-size:20px;font-weight:700;font-family:var(--label);letter-spacing:1px}
+#clase .ctl button.pp{background:#fff;color:#000;font-size:26px}
+#clase .ctl button:disabled{opacity:.35}
+#clase .hint{font-size:12px;opacity:.7;text-align:center;margin-top:4px}
+@media (orientation:landscape) and (max-height:520px){#clase .pz,#clase .hint{display:none}#clase .ctl button{height:56px}#clase .bt{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}#clase .rel{font-size:min(30vw,44vh)}#clase .barra{margin:4px 0}}
+.sheet{position:fixed;inset:0;z-index:70;background:rgba(0,0,0,.55);display:flex;align-items:flex-end;justify-content:center}
+.sheet>div{background:var(--surface);color:var(--ink);border-radius:16px 16px 0 0;width:min(640px,100%);max-height:88vh;overflow:auto;padding:14px 16px calc(16px + env(safe-area-inset-bottom,0px));touch-action:pan-y;overscroll-behavior:contain}
+.sheet h3{font-family:var(--display);font-weight:400;font-size:28px;margin:0 0 6px}
+</style>
+</head>
+<body>
+<header>
+  <div class="hd"><img src="icons/icon-192.png" alt=""><div><h1>Esquina del Entrenador</h1><div class="sub" id="sub"></div></div><div class="sp"></div></div>
+  <nav class="tabs" id="tabs"></nav>
+</header>
+<main id="app"></main>
+<section id="clase" aria-live="polite"></section>
+<div id="sheet"></div>
+<script>
+"use strict";
+// ---------- Versión y novedades (la más nueva arriba) ----------
+const VERSION="1.0";
+const NOVEDADES=[
+  ["1.0","18-oct-2026",["Primera versión: biblioteca de Fundamentos, Ejercicios, Físico, Bloques y Correcciones con filtros.",
+    "Planes y sesiones: el plan en curso, su progresión por semanas y la clase de hoy.",
+    "Modo clase: temporizador de asaltos, Tabata, interválicas, estaciones y fases, con campana, vibración y pantalla grande.",
+    "Cerrar la clase (Sensaciones, Hecha o Saltada) y crear o editar ejercicios y bloques, que se envían por correo para pasarlos a Notion.",
+    "Instalable en el móvil y sin conexión."]]];
+const $=s=>document.querySelector(s), app=$("#app");
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const norm=s=>String(s||"").normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase().replace(/\s+/g," ").trim();
+const hoyISO=()=>{const d=new Date();return new Date(d.getTime()-d.getTimezoneOffset()*6e4).toISOString().slice(0,10)};
+const fechaCorta=f=>{if(!f)return"";const d=new Date(f.slice(0,10)+"T12:00");return d.toLocaleDateString("es-ES",{weekday:"short",day:"numeric",month:"short"})};
+const uid=()=>Math.random().toString(36).slice(2,10)+Date.now().toString(36).slice(-4);
+function toast(m,ms=2600){const t=document.createElement("div");t.className="toast";t.setAttribute("role","status");t.textContent=m;document.body.appendChild(t);setTimeout(()=>t.remove(),ms)}
+
+// ---------- Almacén en este dispositivo ----------
+const LS={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},
+  set(k,v){try{localStorage.setItem(k,JSON.stringify(v));return true}catch(e){return false}}};
+const BASES=["fundamentos","ejercicios","fisico","bloques","correcciones","sesiones","planes","fuentes"];
+const S={datos:null,locales:LS.get("esq.locales",{}),pend:LS.get("esq.pend",[]),enviados:LS.get("esq.enviados",[]),
+  timers:LS.get("esq.timers",{}),aj:LS.get("esq.ajustes",{correo:"",sonido:true,vibrar:true,tema:""}),
+  fil:LS.get("esq.filtros",{}),idx:{}};
+function guardar(){LS.set("esq.locales",S.locales);LS.set("esq.pend",S.pend);LS.set("esq.enviados",S.enviados);LS.set("esq.timers",S.timers);LS.set("esq.ajustes",S.aj);LS.set("esq.filtros",S.fil)}
+
+// ---------- Datos: lo importado de Notion + lo creado aquí ----------
+function reindexar(){
+  S.idx={};
+  for(const b of BASES) for(const x of (S.datos?.[b]||[])) S.idx[x.id]={b,x};
+  for(const [id,l] of Object.entries(S.locales)) S.idx[id]={b:l.base,x:{...l.item,id,_local:l.accion}};
+  // Heredados (solo lectura), como los rollups de Notion
+  for(const x of lista("bloques")){
+    x._fund=[...new Set((x["Ejercicios"]||[]).flatMap(i=>get(i)?.["Fundamentos"]||[]))];
+    x._patron=[...new Set((x["Físico"]||[]).flatMap(i=>get(i)?.["Patrón de movimiento"]||[]))];
+  }
+}
+const get=id=>S.idx[id]?.x;
+const baseDe=id=>S.idx[id]?.b;
+const lista=b=>Object.values(S.idx).filter(e=>e.b===b).map(e=>e.x);
+const titulo=id=>get(id)?.titulo||"(no está en los datos)";
+const refsA=(b,campo,id)=>lista(b).filter(x=>(x[campo]||[]).includes(id));
+function cargarDatos(){S.datos=LS.get("esq.datos",null);reindexar()}
+
+// ---------- Opciones de los campos (esquema de Notion, 18-oct-2026) ----------
+const OPC={
+  "ejercicios.Tipo":["Técnica","Contraataque","Defensa","Acondicionamiento","Reacción"],
+  "ejercicios.Grupo":["Básicos","Combinaciones","Contraataques","Manoplas","Sacos","Otros"],
+  "Nivel":["Básico","Intermedio","Avanzado"],"Distancia":["Corta","Media","Larga"],"Zona":["Cabeza","Cuerpo","Mixto"],
+  "Intención":["Entrada","Salida","Contra","Presión","Engaño","Defensa"],
+  "Se trabaja en":["Sombra","Saco","Manoplas","Pareja","Sparring"],
+  "bloques.Tipo":["Técnica","Contraataque","Defensa","Acondicionamiento"],
+  "Formato":["Pareja","Sombra","Saco","Manoplas","Circuito","Sparring","Físico","Calentamiento","Vuelta a la calma"],
+  "Método":["Asaltos","Tiempo fijo","Series y repeticiones","Escaleras","Interválicas","Superseries","Continuo","Tabata","Circuito/estaciones","Libre"],
+  "Patrón de movimiento":["Empuje horizontal","Empuje vertical","Tracción horizontal","Tracción vertical","Sentadilla","Bisagra de cadera","Core/Anti-rotación","Locomoción/Pliometría"],
+  "Zona muscular específica":["Pecho","Espalda","Hombro","Bíceps","Tríceps","Cuádriceps","Isquios","Glúteo","Pantorrilla","Core","Cuerpo completo","Cuello","Flexores de cadera"],
+  "fisico.Categoría":["Fuerza","Core","Cardio/Resistencia","Movilidad","Potencia"],
+  "Grupo muscular":["Piernas","Core","Tren superior","Cardiovascular","Cuerpo completo"],
+  "Material":["Ninguno","Balón medicinal","Banda","Máquina","Comba","Mancuernas"],
+  "fundamentos.Categoría":["Golpe","Defensa","Movimiento","Guardia"],
+  "correcciones.Categoría":["Respiración","Piernas y peso","Ángulos y distancia","Defensa","Mirada","Ataque"]};
+const opc=(b,c)=>OPC[b+"."+c]||OPC[c]||[];
+
+// Qué se ve y por qué se filtra en cada base de la biblioteca
+const BIB={
+  ejercicios:{nombre:"Ejercicios",props:["Notación","Tipo","Grupo","Nivel","Distancia","Zona","Nº golpes","Intención","Se trabaja en"],
+    rels:[["Fundamentos","Fundamentos"],["🔁 Bloques","Bloques"],["Familia","Familia"],["Variantes","Variantes"],["Fuente","Fuente"]],
+    filtros:[["Fundamentos","Fundamento","rel"],["Intención"],["Se trabaja en"],["Nivel"],["Tipo"],["Grupo"],["Distancia"],["Zona"]]},
+  fisico:{nombre:"Físico",props:["Descripción","Categoría","Grupo muscular","Patrón de movimiento","Zona muscular específica","Material","Nivel","Series/Reps o Duración","Notas"],
+    rels:[["Fuente","Fuente"]],
+    filtros:[["Patrón de movimiento"],["Zona muscular específica"],["Categoría"],["Grupo muscular"],["Material"],["Nivel"]]},
+  bloques:{nombre:"Bloques",props:["Formato","Método","Duración (min)","Tipo","Objetivo","Nivel","Zona","Distancia","Nº golpes","Desarrollo","Notas"],
+    rels:[["Ejercicios","Ejercicios"],["Físico","Físico"],["_fund","Fundamentos (vía Ejercicios)"],["Familia","Familia"],["Variantes","Variantes"],["Fuente","Fuente"]],
+    filtros:[["Formato"],["Método"],["Tipo"],["Objetivo","Objetivo","opt","Intención"],["Nivel"],["_fund","Fundamento","rel"],["_patron","Patrón","opt","Patrón de movimiento"]]},
+  fundamentos:{nombre:"Fundamentos",props:["Categoría","Descripción","Ejecución","Errores comunes"],rels:[],filtros:[["Categoría"]]},
+  correcciones:{nombre:"Correcciones",props:["Categoría","Detalle"],
+    rels:[["Fundamentos relacionados","Fundamentos"],["Ejercicios relacionados","Ejercicios"]],
+    filtros:[["Categoría"],["Fundamentos relacionados","Fundamento","rel"]]}};
+
+// ---------- Texto con formato (el cuerpo de las páginas de Notion) ----------
+function inline(s){
+  return esc(s).replace(/\*\*([^*]+?)\*\*/g,"<b>$1</b>").replace(/(^|[\s(])\*([^*\s][^*]*?)\*(?=[\s).,;:]|$)/g,"$1<i>$2</i>")
+    .replace(/\[([^\]]*)\]\(#([0-9a-f]{32})\)/g,(m,t,id)=>`<a class="int" href="#/f/${id}">${t||esc(titulo(id))}</a>`)
+    .replace(/\[([^\]]+)\]\((https?:[^)\s]+)\)/g,'<a href="$2" target="_blank" rel="noopener">$1</a>');
+}
+function md(txt){
+  if(!txt)return"";
+  const out=[];let lst=null;
+  const cerrar=()=>{if(lst){out.push(`</${lst}>`);lst=null}};
+  for(const raw of txt.split("\n")){
+    const sang=/^\s{2,}/.test(raw), l=raw.trim();
+    let m;
+    if(!l){cerrar();continue}
+    if((m=l.match(/^(#{1,3})\s+(.*)/))){cerrar();const h=Math.min(4,m[1].length+1);out.push(`<h${h}>${inline(m[2])}</h${h}>`);continue}
+    if((m=l.match(/^- \[( |x)\]\s*(.*)/))){if(lst!=="ul"){cerrar();out.push("<ul>");lst="ul"}out.push(`<li class="todo${sang?" in":""}">${m[1]==="x"?"☑":"☐"} ${inline(m[2])}</li>`);continue}
+    if((m=l.match(/^[-•]\s+(.*)/))){if(!sang&&lst!=="ul"){cerrar();out.push("<ul>");lst="ul"}if(!lst){out.push("<ul>");lst="ul"}out.push(`<li${sang?' class="in"':""}>${inline(m[1])}</li>`);continue}
+    if((m=l.match(/^\d+\.\s+(.*)/))){if(!sang&&lst!=="ol"){cerrar();out.push("<ol>");lst="ol"}if(!lst){out.push("<ol>");lst="ol"}out.push(`<li${sang?' class="in"':""}>${inline(m[1])}</li>`);continue}
+    cerrar();
+    if((m=l.match(/^>\s*(.*)/))){out.push(`<div class="callout">${inline(m[1])}</div>`);continue}
+    if(l==="---"){out.push("<hr>");continue}
+    out.push(`<p>${inline(l)}</p>`);
+  }
+  cerrar();return `<div class="md">${out.join("")}</div>`;
+}
+const tags=(v,cls="")=>(Array.isArray(v)?v:v!=null&&v!==""?[v]:[]).map(t=>`<span class="tag ${cls}">${esc(t)}</span>`).join("");
+const enlaces=ids=>(ids||[]).map(i=>`<a class="chip" href="#/f/${i}">${esc(titulo(i))}</a>`).join(" ");
+
+// ---------- Navegación (el botón atrás del móvil funciona) ----------
+const ir=h=>{location.hash=h};
+function ruta(){const h=location.hash.replace(/^#\/?/,"");const [v,...r]=h.split("/");return {v:v||"hoy",a:r.map(decodeURIComponent)}}
+function tabs(){
+  const v=ruta().v,n=S.pend.length;
+  const T=[["hoy","Hoy"],["planes","Planes"],["bib","Biblioteca"],["enviar","Enviar"+(n?`<span class="cnt">${n}</span>`:"")],["ajustes","Ajustes"]];
+  const act={plan:"planes",ses:"planes",f:"bib",editar:"bib",nuevo:"bib",cerrar:"hoy"}[v]||v;
+  $("#tabs").innerHTML=T.map(([k,t])=>`<a href="#/${k}"${k===act?' aria-current="page"':""}>${t}</a>`).join("");
+  const d=S.datos;
+  $("#sub").textContent=(d?(d.ejemplos?"Ejemplos":"Datos del "+fechaCorta(d.exportado)):"Sin datos")+" · v"+VERSION;
+}
+function render(){
+  tabs();
+  const {v,a}=ruta();
+  const V={hoy:vHoy,planes:vPlanes,plan:()=>vPlan(a[0]),ses:()=>vSesion(a[0]),bib:()=>vBib(a[0]||S.fil._base||"ejercicios"),
+    f:()=>vFicha(a[0]),nuevo:()=>vEditor(a[0],null),editar:()=>vEditor(baseDe(a[0]),a[0]),cerrar:()=>vCerrar(a[0]),enviar:vEnviar,ajustes:vAjustes}[v]||vHoy;
+  app.innerHTML=V();
+  if(v!=="bib")window.scrollTo(0,0);
+}
+window.addEventListener("hashchange",render);
+
+// ---------- Planes y sesiones ----------
+const esGrupo=p=>p["Estado"]==="En curso"&&p["Tipo"]!=="Físico";
+const sesDePlan=p=>{const ids=new Set([...(p["Sesiones"]||[]),...lista("sesiones").filter(s=>(s["Plan"]||[]).includes(p.id)).map(s=>s.id)]);return [...ids].map(get).filter(Boolean)};
+const diaDe=f=>new Date(f+"T12:00").getDay(); // 2 martes, 4 jueves
+const diaNombre=s=>{const t=norm(s.titulo);return /martes/.test(t)?"martes":/jueves/.test(t)?"jueves":s["Fecha"]?(["domingo","lunes","martes","miércoles","jueves","viernes","sábado"][diaDe(s["Fecha"])]):""};
+function lineaDe(txt,clave){const l=(txt||"").split("\n").find(x=>norm(x).startsWith(norm(clave)));return l?l.slice(l.indexOf(":")+1).trim():""}
+function estadoPlan(p){
+  const ses=sesDePlan(p),hoy=hoyISO();
+  const fechadas=ses.filter(s=>s["Fecha"]).sort((a,b)=>a["Fecha"].localeCompare(b["Fecha"]));
+  const pasadas=fechadas.filter(s=>s["Fecha"]<hoy), ultima=pasadas.at(-1);
+  const plantillas=ses.filter(s=>s["Plantilla"]);
+  let semana=1,dia="martes",terminado=false;
+  if(ultima&&ultima["Semana"]){
+    const d=diaNombre(ultima);semana=ultima["Semana"];
+    if(d==="martes")dia="jueves";else{dia="martes";semana++}
+    if(semana>(p["Duración (semanas)"]||99))terminado=true;
+  }
+  const plantilla=plantillas.find(s=>s["Semana"]===semana&&diaNombre(s)===dia);
+  return {ses,fechadas,pasadas,ultima,plantillas,semana,dia,terminado,plantilla,despues:lineaDe(p["Estructura/Progresión"],"Después")};
+}
+function tarjetaSesion(s,extra=""){
+  const est=s["Estado"],c=est==="Hecha"?"v":est==="Saltada"?"o":"";
+  return `<div class="card"><h3><a href="#/ses/${s.id}" style="color:inherit;text-decoration:none">${esc(s.titulo)}</a></h3>
+    <div class="meta">${s["Fecha"]?`<span class="tag r">${esc(fechaCorta(s["Fecha"]))}</span>`:""}${s["Plantilla"]?'<span class="tag">Plantilla</span>':""}${est?`<span class="tag ${c}">${esc(est)}</span>`:""}${s["Duración (min)"]?`<span>${s["Duración (min)"]} min</span>`:""}${s._local?'<span class="tag l">Sin pasar a Notion</span>':""}</div>${extra}</div>`;
+}
+function vHoy(){
+  if(!S.datos)return vSinDatos();
+  const hoy=hoyISO(),h=[];
+  if(S.datos.ejemplos)h.push(`<div class="banner">Estás viendo los ejemplos. Importa tus datos en <a href="#/ajustes">Ajustes</a> para ver tus planes y tus clases.</div>`);
+  const grupo=lista("planes").filter(esGrupo);
+  const deHoy=lista("sesiones").filter(s=>s["Fecha"]===hoy);
+  h.push(`<h2 class="t">Hoy · ${esc(fechaCorta(hoy))}</h2>`);
+  for(const s of deHoy) h.push(bloqueHoy(s));
+  if(grupo.length===1){
+    const p=grupo[0],e=estadoPlan(p);
+    h.push(`<h3 class="s">Plan en curso</h3><a class="card" href="#/plan/${p.id}"><h3>${esc(p.titulo)}</h3><div class="meta">${tags(p["Nivel"])}${tags(p["Tipo"])}<span>${p["Duración (semanas)"]||"?"} semanas</span>${e.ultima?`<span>· última clase: semana ${e.ultima["Semana"]||"?"}, ${esc(diaNombre(e.ultima))}</span>`:""}</div></a>`);
+    if(!deHoy.length){
+      if(e.terminado) h.push(`<div class="err"><b>${esc(p.titulo)} ha terminado.</b> Toca pasar a ${esc((e.despues||"el siguiente plan").replace(/[.\s]+$/,""))}. Cambia su Estado a «En curso» en Notion.</div>`);
+      else if(e.plantilla) h.push(`<h3 class="s">Próxima clase · semana ${e.semana}, ${e.dia}</h3>${tarjetaSesion(e.plantilla,`<div class="note">Plantilla del plan. La Rutina crea la clase con fecha el mismo día; si la das antes, el cierre la crea en Notion.</div>`)}
+        <div class="bar" style="margin-top:8px"><button class="btn pri big" data-clase="${e.plantilla.id}">▶ Dar esta clase</button></div>`);
+      else h.push(`<div class="card"><b>Próxima clase: semana ${e.semana}, ${e.dia}.</b><span class="note">Este plan no tiene plantilla para ese día: la prepara la Rutina el martes o el jueves. Cuando llegue el aviso con su archivo, impórtalo en Ajustes.</span></div>`);
+    }
+    const sinCerrar=e.pasadas.filter(s=>s["Estado"]==="Planificada");
+    if(sinCerrar.length) h.push(`<h3 class="s">Clases sin cerrar</h3><div class="list">${sinCerrar.slice(-3).reverse().map(s=>tarjetaSesion(s,`<div class="bar"><a class="btn sm pri" href="#/cerrar/${s.id}">Cerrar la clase</a></div>`)).join("")}</div>`);
+    if(e.ultima&&e.ultima["Estado"]!=="Planificada") h.push(`<h3 class="s">Última clase</h3>${tarjetaSesion(e.ultima,e.ultima["Sensaciones"]?`<div class="note">«${esc(e.ultima["Sensaciones"])}»</div>`:"")}`);
+  }else if(grupo.length>1) h.push(`<div class="err">Hay ${grupo.length} planes de grupo «En curso». Deja solo uno en Notion para que la app (y la Rutina) sepan cuál toca.</div>`);
+  else if(!S.datos.ejemplos) h.push(`<div class="empty"><b>No hay ningún plan de grupo en curso</b>Marca uno como «En curso» en Notion y vuelve a exportar.</div>`);
+  h.push(`<h3 class="s">Temporizador</h3><div class="bar"><button class="btn osc" data-libre="1">⏱ Asaltos libres</button><a class="btn" href="#/bib/bloques">Elegir un bloque</a></div>`);
+  return h.join("");
+}
+function bloqueHoy(s){
+  const pasos=pasosDeSesion(s);
+  return `<div class="card" style="border-color:var(--rojo)"><h3><a href="#/ses/${s.id}" style="color:inherit;text-decoration:none">${esc(s.titulo)}</a></h3>
+    <div class="meta">${tags(s["Estado"])}${s["Duración (min)"]?`<span>${s["Duración (min)"]} min</span>`:""}${s["Nº alumnos aprox"]?`<span>· ${esc(s["Nº alumnos aprox"])} alumnos</span>`:""}</div>
+    ${s["Objetivo"]?`<div class="obj"><b>Objetivo</b>${esc(s["Objetivo"])}</div>`:""}
+    ${s["Cosas a vigilar"]?`<div class="vig"><b>Cosas a vigilar</b>${esc(s["Cosas a vigilar"])}</div>`:""}
+    <ol style="margin:4px 0;padding-left:22px">${pasos.map(p=>`<li><a class="int" href="#/f/${p.id}" style="color:inherit">${esc(titulo(p.id))}</a>${p.min?` <span class="note">· ${p.min} min</span>`:""}</li>`).join("")}</ol>
+    <div class="bar"><button class="btn pri big" data-clase="${s.id}">▶ Empezar clase</button>${s["Estado"]==="Planificada"?`<a class="btn" href="#/cerrar/${s.id}">Cerrar</a>`:""}</div></div>`;
+}
+function vPlanes(){
+  if(!S.datos)return vSinDatos();
+  const ps=lista("planes"),ord=["En curso","Planificado","Pausado","Completado"];
+  ps.sort((a,b)=>ord.indexOf(a["Estado"])-ord.indexOf(b["Estado"])||a.titulo.localeCompare(b.titulo));
+  if(!ps.length)return `<div class="empty"><b>No hay planes</b>Los planes vienen de Notion: importa tu archivo en Ajustes.</div>`;
+  return `<h2 class="t">Planes</h2><div class="grid">${ps.map(p=>`<a class="card" href="#/plan/${p.id}"><h3>${esc(p.titulo)}</h3>
+    <div class="meta"><span class="tag ${p["Estado"]==="En curso"?"r":""}">${esc(p["Estado"]||"")}</span>${tags(p["Tipo"])}${tags(p["Nivel"])}<span>${sesDePlan(p).length} sesiones</span></div>
+    ${p["Objetivo"]?`<div class="note">${esc(p["Objetivo"])}</div>`:""}</a>`).join("")}</div>`;
+}
+function vPlan(id){
+  const p=get(id);if(!p)return noEsta();
+  const e=estadoPlan(p);
+  const lineas=(p["Estructura/Progresión"]||"").split("\n").filter(x=>x.trim());
+  const enTramo=l=>{const m=l.match(/Semanas?\s+(\d+)(?:\s*-\s*(\d+))?/i);return m&&!e.terminado&&e.semana>=+m[1]&&e.semana<=+(m[2]||m[1])};
+  const pl=e.plantillas.sort((a,b)=>(a["Semana"]||0)-(b["Semana"]||0)||(diaNombre(a)==="martes"?-1:1));
+  return `<button class="back" onclick="history.back()">← Atrás</button>
+  <h2 class="t">${esc(p.titulo)}</h2><div class="meta">${tags(p["Estado"],"r")}${tags(p["Tipo"])}${tags(p["Nivel"])}${p["Fecha inicio"]?`<span>desde ${esc(fechaCorta(p["Fecha inicio"]))}</span>`:""}</div>
+  ${p["Objetivo"]?`<div class="obj"><b>Objetivo</b>${esc(p["Objetivo"])}</div>`:""}
+  ${lineas.length?`<h3 class="s">Progresión</h3><div class="prog">${lineas.map(l=>`<div class="${enTramo(l)?"aqui":""}">${inline(l)}</div>`).join("")}</div>`:""}
+  ${p["Estado"]==="En curso"?`<p class="note">${e.terminado?"Plan terminado.":`Toca: semana ${e.semana}, ${e.dia}.`}</p>`:""}
+  ${md(p.cuerpo?.split("\n").filter(l=>l.startsWith(">")).join("\n"))}
+  ${pl.length?`<h3 class="s">Sesiones del plan (plantillas)</h3><div class="list">${pl.map(s=>tarjetaSesion(s)).join("")}</div>`:""}
+  ${e.fechadas.length?`<h3 class="s">Historial de clases</h3><div class="list">${e.fechadas.slice().reverse().map(s=>tarjetaSesion(s)).join("")}</div>`:""}
+  ${(()=>{const otras=e.ses.filter(s=>!s["Plantilla"]&&!s["Fecha"]);return otras.length?`<h3 class="s">Referencias</h3><div class="list">${otras.map(s=>tarjetaSesion(s)).join("")}</div>`:""})()}
+  ${(p["Fuente"]||[]).length?`<h3 class="s">Fuente</h3>${enlaces(p["Fuente"])}`:""}
+  <p class="note" style="margin-top:16px"><a href="${esc(p.url||"#")}" target="_blank" rel="noopener">Abrir en Notion</a></p>`;
+}
+// Bloques de una sesión en el orden del cuerpo, con los minutos que da la sesión
+function pasosDeSesion(s){
+  const pasos=[];let faseMin=null,fase="",enFase=0;
+  const lineas=(s.cuerpo||"").split("\n");
+  const porFase={};
+  for(const l of lineas){
+    const h=l.match(/^#{2,3}\s+(?:\d+\.\s*)?(.*)/);
+    if(h){fase=h[1].replace(/\*\*/g,"");const m=fase.match(/(\d+)\s*min/);faseMin=m?+m[1]:null;continue}
+    for(const m of l.matchAll(/\]\(#([0-9a-f]{32})\)/g)){
+      if(baseDe(m[1])!=="bloques")continue;
+      const resto=l.slice(l.indexOf(m[0])+m[0].length);const mm=resto.match(/(\d+)\s*min/);
+      const p={id:m[1],fase,min:mm?+mm[1]:null,faseMin};pasos.push(p);(porFase[fase]=porFase[fase]||[]).push(p);
+    }
+  }
+  for(const ps of Object.values(porFase)) if(ps.length===1&&!ps[0].min) ps[0].min=ps[0].faseMin;
+  for(const b of s["Bloques"]||[]) if(!pasos.some(p=>p.id===b)&&get(b)) pasos.push({id:b,fase:"",min:null});
+  return pasos;
+}
+function vSesion(id){
+  const s=get(id);if(!s)return noEsta();
+  const plan=(s["Plan"]||[])[0];
+  return `<button class="back" onclick="history.back()">← Atrás</button>
+  <h2 class="t">${esc(s.titulo)}</h2>
+  <div class="meta">${s["Fecha"]?`<span class="tag r">${esc(fechaCorta(s["Fecha"]))}</span>`:""}${tags(s["Estado"])}${s["Plantilla"]?'<span class="tag">Plantilla</span>':""}${s["Semana"]?`<span>Semana ${s["Semana"]}</span>`:""}${s["Duración (min)"]?`<span>· ${s["Duración (min)"]} min</span>`:""}${tags(s["Foco"])}${tags(s["Nivel"])}${tags(s["Formato"])}${s["Nº alumnos aprox"]?`<span>· ${esc(s["Nº alumnos aprox"])} alumnos</span>`:""}</div>
+  ${plan?`<p class="note">Plan: <a class="int" href="#/plan/${plan}">${esc(titulo(plan))}</a></p>`:""}
+  ${s["Objetivo"]?`<div class="obj"><b>Objetivo</b>${esc(s["Objetivo"])}</div>`:""}
+  ${s["Cosas a vigilar"]?`<div class="vig"><b>Cosas a vigilar</b>${esc(s["Cosas a vigilar"])}</div>`:""}
+  <div class="bar" style="margin:10px 0"><button class="btn pri big" data-clase="${s.id}">▶ Empezar clase</button>${s["Estado"]!=="Hecha"?`<a class="btn" href="#/cerrar/${s.id}">Cerrar la clase</a>`:""}</div>
+  ${s["Sensaciones"]?`<div class="ok"><b>Sensaciones:</b> ${esc(s["Sensaciones"])}</div>`:""}
+  ${md(s.cuerpo)}
+  ${(s["Material necesario"]||[]).length?`<h3 class="s">Material</h3><div class="meta">${tags(s["Material necesario"])}</div>`:""}
+  ${(s["Intención"]||[]).length?`<h3 class="s">Intención</h3><div class="meta">${tags(s["Intención"])}</div>`:""}
+  <p class="note" style="margin-top:16px">${s.url?`<a href="${esc(s.url)}" target="_blank" rel="noopener">Abrir en Notion</a>`:""}</p>`;
+}
+
+// ---------- Biblioteca con filtros ----------
+function vBib(base){
+  if(!BIB[base])base="ejercicios";
+  if(!S.datos)return vSinDatos();
+  S.fil._base=base;const cfg=BIB[base],F=S.fil[base]=S.fil[base]||{};const q=S.fil["q_"+base]||"";
+  let xs=lista(base);
+  const activos=Object.entries(F).filter(([k,v])=>v&&v.length);
+  xs=xs.filter(x=>activos.every(([k,v])=>{const val=x[k];const arr=Array.isArray(val)?val:val!=null?[val]:[];return v.some(o=>arr.includes(o))}));
+  if(q){const nq=norm(q);xs=xs.filter(x=>norm([x.titulo,x["Notación"],x["Descripción"],x["Desarrollo"],x["Detalle"]].join(" ")).includes(nq))}
+  xs.sort((a,b)=>a.titulo.localeCompare(b.titulo,"es"));
+  const grupos=cfg.filtros.map(([campo,etq,tipo,clave])=>{
+    let ops;
+    if(tipo==="rel"){const usados=new Set(lista(base).flatMap(x=>x[campo]||[]));ops=lista("fundamentos").filter(f=>usados.has(f.id)).sort((a,b)=>(a["Categoría"]||"").localeCompare(b["Categoría"]||"")||a.titulo.localeCompare(b.titulo)).map(f=>[f.id,f.titulo])}
+    else{const conocidas=opc(base,clave||campo);const usados=new Set(lista(base).flatMap(x=>Array.isArray(x[campo])?x[campo]:x[campo]!=null?[x[campo]]:[]));ops=[...conocidas.filter(o=>usados.has(o)),...[...usados].filter(o=>!conocidas.includes(o))].map(o=>[o,o])}
+    if(!ops.length)return"";
+    return `<div class="fgrp"><div>${esc(etq||campo)}</div><div class="chiprow">${ops.map(([v,t])=>`<button class="chip" data-fil="${esc(campo)}" data-val="${esc(v)}" aria-pressed="${(F[campo]||[]).includes(v)}">${esc(t)}</button>`).join("")}</div></div>`;
+  }).join("");
+  const nAct=activos.reduce((n,[,v])=>n+v.length,0);
+  const puede=base==="ejercicios"||base==="bloques";
+  return `<div class="seg" role="tablist">${Object.entries(BIB).map(([k,c])=>`<a class="chip" role="tab" href="#/bib/${k}" aria-pressed="${k===base}">${c.nombre} <span class="note">${lista(k).length}</span></a>`).join("")}</div>
+  <div class="bar" style="margin-top:10px"><input type="search" id="q" placeholder="Buscar en ${cfg.nombre.toLowerCase()}…" value="${esc(q)}" style="flex:1;min-width:0">${puede?`<a class="btn pri" href="#/nuevo/${base}">+ Nuevo</a>`:""}</div>
+  <details class="fil"${nAct?" open":""}><summary>Filtros${nAct?` (${nAct})`:""}</summary>${grupos}${nAct?`<button class="btn sm dan" data-limpiar="${base}">Quitar filtros</button>`:""}</details>
+  <p class="note">${xs.length} de ${lista(base).length}</p>
+  <div class="grid" id="res">${xs.map(x=>tarjetaFicha(base,x)).join("")||`<div class="empty"><b>Nada con esos filtros</b>Quita alguno.</div>`}</div>`;
+}
+function tarjetaFicha(base,x){
+  const m=[];
+  if(base==="ejercicios")m.push(tags(x["Nivel"]),tags(x["Tipo"]),tags(x["Se trabaja en"]));
+  if(base==="fisico")m.push(tags(x["Categoría"]),tags(x["Patrón de movimiento"]),tags(x["Nivel"]));
+  if(base==="bloques")m.push(tags(x["Método"],"r"),tags(x["Formato"]),x["Duración (min)"]?`<span>${x["Duración (min)"]} min</span>`:"",tags(x["Nivel"]));
+  if(base==="fundamentos"||base==="correcciones")m.push(tags(x["Categoría"]));
+  if(x._local)m.push('<span class="tag l">Sin pasar a Notion</span>');
+  const sub=base==="ejercicios"&&x["Notación"]&&norm(x["Notación"])!==norm(x.titulo)?`<div class="not">${esc(x["Notación"])}</div>`:
+    base==="fundamentos"?`<div class="note">${esc(x["Descripción"]||"")}</div>`:base==="correcciones"?`<div class="note">${esc(x["Detalle"]||"")}</div>`:
+    base==="fisico"?`<div class="note">${esc(x["Series/Reps o Duración"]||"")}</div>`:"";
+  return `<a class="card" href="#/f/${x.id}"><h3>${esc(x.titulo)}</h3>${sub}<div class="meta">${m.join("")}</div></a>`;
+}
+function vFicha(id){
+  const x=get(id),base=baseDe(id);if(!x)return noEsta();
+  if(base==="sesiones")return vSesion(id);if(base==="planes")return vPlan(id);
+  if(base==="fuentes")return `<button class="back" onclick="history.back()">← Atrás</button><h2 class="t">${esc(x.titulo)}</h2><div class="meta">${tags(x["Tipo"])}${tags(x["Confianza"])}</div>
+    <dl class="props"><dt>Autor</dt><dd>${esc(x["Autor/Cuenta"]||"")}</dd>${x["Enlace"]?`<dt>Enlace</dt><dd><a href="${esc(x["Enlace"])}" target="_blank" rel="noopener">Abrir</a></dd>`:""}</dl>${x["Notas"]?`<p>${esc(x["Notas"])}</p>`:""}`;
+  const cfg=BIB[base];
+  const props=cfg.props.filter(k=>x[k]!=null&&x[k]!==""&&!(Array.isArray(x[k])&&!x[k].length));
+  const largos=["Descripción","Ejecución","Errores comunes","Detalle","Desarrollo","Notas"];
+  const rels=cfg.rels.filter(([k])=>(x[k]||[]).length).map(([k,t])=>k==="Fuente"?
+    `<h3 class="s">${t}</h3>${(x[k]).map(f=>{const fu=get(f);return fu?`<div class="card"><b>${esc(fu.titulo)}</b><span class="note">${esc(fu["Autor/Cuenta"]||"")}${fu["Enlace"]?` · <a href="${esc(fu["Enlace"])}" target="_blank" rel="noopener">enlace</a>`:""}</span></div>`:""}).join("")}`:
+    `<h3 class="s">${t}</h3><div class="rels">${enlaces(x[k])}</div>`).join("");
+  let inversas="";
+  if(base==="fundamentos"){const ej=refsA("ejercicios","Fundamentos",id),co=refsA("correcciones","Fundamentos relacionados",id);
+    inversas=(ej.length?`<h3 class="s">Ejercicios que lo trabajan (${ej.length})</h3><div class="rels">${enlaces(ej.map(e=>e.id))}</div>`:"")+(co.length?`<h3 class="s">Correcciones</h3><div class="rels">${enlaces(co.map(e=>e.id))}</div>`:"")}
+  if(base==="ejercicios"){const co=[...new Set([...(x["Correcciones"]||[]),...refsA("correcciones","Ejercicios relacionados",id).map(c=>c.id)])];
+    inversas=co.length?`<h3 class="s">Correcciones</h3><div class="list">${co.map(c=>get(c)).filter(Boolean).map(c=>`<a class="card" href="#/f/${c.id}"><b>${esc(c.titulo)}</b><span class="note">${esc(c["Detalle"]||"")}</span></a>`).join("")}</div>`:""}
+  if(base==="ejercicios"||base==="fisico"){const bl=refsA("bloques",base==="fisico"?"Físico":"Ejercicios",id);
+    if(bl.length&&!(x["🔁 Bloques"]||[]).length)inversas+=`<h3 class="s">Bloques que lo usan</h3><div class="rels">${enlaces(bl.map(b=>b.id))}</div>`}
+  return `<button class="back" onclick="history.back()">← Atrás</button>
+  <h2 class="t">${esc(x.titulo)}</h2>
+  ${x._local?`<div class="banner">Ficha ${x._local==="nuevo"?"nueva":"editada"} en este móvil: aún no está en Notion. Mándala desde <a href="#/enviar">Enviar</a>.</div>`:""}
+  ${base==="ejercicios"&&x["Notación"]?`<div class="not" style="font-size:17px;padding:8px 10px">${esc(x["Notación"])}</div>`:""}
+  ${diagrama(base,x)}
+  <dl class="props">${props.filter(k=>k!=="Notación"&&!largos.includes(k)).map(k=>`<dt>${esc(k)}</dt><dd>${Array.isArray(x[k])?tags(x[k]):esc(x[k])}</dd>`).join("")}
+  ${base==="bloques"&&(x._patron||[]).length?`<dt>Patrón (vía Físico)</dt><dd>${tags(x._patron)}</dd>`:""}</dl>
+  ${props.filter(k=>largos.includes(k)).map(k=>`<h3 class="s">${esc(k)}</h3><p style="white-space:pre-line;margin:0">${inline(x[k])}</p>`).join("")}
+  ${base==="bloques"?`<div class="bar" style="margin:12px 0"><button class="btn pri" data-bloque="${id}">⏱ Temporizador de este bloque</button></div>`:""}
+  ${md(x.cuerpo)}${rels}${inversas}
+  ${x["Vídeo"]?`<p><a class="btn" href="${esc(x["Vídeo"])}" target="_blank" rel="noopener">▶️ Vídeo</a></p>`:""}
+  <div class="bar" style="margin-top:16px">${base==="ejercicios"||base==="bloques"?`<a class="btn" href="#/editar/${id}">✎ Editar</a>`:""}${x.url?`<a class="btn" href="${esc(x.url)}" target="_blank" rel="noopener">Abrir en Notion</a>`:""}</div>`;
+}
+const noEsta=()=>`<button class="back" onclick="history.back()">← Atrás</button><div class="empty"><b>No está en los datos de este móvil</b>Puede que sea nueva en Notion: importa un archivo más reciente.</div>`;
+function vSinDatos(){return `<div class="empty" style="margin-top:20px"><b>Aún no hay datos</b>Importa el archivo de tu centro de entrenamiento o carga los ejemplos.<div class="bar" style="justify-content:center;margin-top:12px"><a class="btn pri" href="#/ajustes">Ir a Ajustes</a><button class="btn" data-ejemplos="1">Cargar ejemplos</button></div></div>`}
+
+// ---------- Diagramas: solo donde aportan ----------
+function parejaAB(not){
+  const m=String(not||"").match(/A\s*:\s*(.+?)\s*\/\s*B\s*:\s*(.+)$/i);
+  return m?{a:m[1],b:m[2]}:null;
+}
+function diagrama(base,x){
+  if(base==="ejercicios"){const ab=parejaAB(x["Notación"]);if(!ab)return"";
+    return `<div class="dg ab" aria-label="Qué hace cada uno de la pareja"><div class="a"><b>A</b>${esc(ab.a)}</div><div class="b"><b>B</b>${esc(ab.b)}</div></div>`}
+  if(base!=="bloques")return"";
+  if(x["Método"]==="Circuito/estaciones"||(x["Formato"]||[]).includes("Circuito")){
+    const nombres=[...(x["Físico"]||[]),...(x["Ejercicios"]||[])].map(titulo);
+    const n=Math.max(nombres.length,+(String(x["Desarrollo"]||"").match(/(\d+)\s*estaciones/)||[])[1]||0);
+    if(n<2)return"";
+    const R=118,cx=260,cy=150,pts=[...Array(n)].map((_,i)=>{const a=-Math.PI/2+i*2*Math.PI/n;return [cx+R*Math.cos(a),cy+R*Math.sin(a)]});
+    const corta=s=>{s=s.replace(/\s*\(.*?\)/g,"");return s.length>17?s.slice(0,16)+"…":s};
+    return `<div class="dg"><svg viewBox="0 0 520 300" role="img" aria-label="Circuito de ${n} estaciones en el gimnasio, se rota en el sentido de las agujas del reloj">
+      <defs><marker id="fl" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="currentColor"/></marker></defs>
+      <circle cx="${cx}" cy="${cy}" r="${R}" fill="none" stroke="var(--line)" stroke-width="3" stroke-dasharray="6 8"/>
+      ${pts.map(([px,py],i)=>{const a=-Math.PI/2+(i+.5)*2*Math.PI/n;const ax=cx+(R+0)*Math.cos(a),ay=cy+R*Math.sin(a);
+        return `<path d="M${(cx+R*Math.cos(a-.12)).toFixed(1)} ${(cy+R*Math.sin(a-.12)).toFixed(1)} A${R} ${R} 0 0 1 ${(cx+R*Math.cos(a+.12)).toFixed(1)} ${(cy+R*Math.sin(a+.12)).toFixed(1)}" fill="none" stroke="var(--muted)" stroke-width="3" marker-end="url(#fl)" style="color:var(--muted)"/>`}).join("")}
+      ${pts.map(([px,py],i)=>`<g><circle cx="${px}" cy="${py}" r="20" fill="var(--rojo)"/><text x="${px}" y="${py+7}" text-anchor="middle" font-family="Bebas Neue,Impact,sans-serif" font-size="22" fill="#fff">${i+1}</text>
+        ${nombres[i]?`<text x="${px+(px>=cx?26:-26)}" y="${py+5}" text-anchor="${px>=cx?"start":"end"}" font-size="14" font-weight="600" fill="var(--ink)" font-family="Barlow,sans-serif">${esc(corta(nombres[i]))}</text>`:""}</g>`).join("")}
+      <text x="${cx}" y="${cy+5}" text-anchor="middle" font-size="13" fill="var(--muted)" font-family="Barlow,sans-serif">rotación ↻</text></svg>
+      <p class="note" style="text-align:center;margin:4px 0 0">Una estación por pieza, en el orden de la ficha. ${esc((String(x["Desarrollo"]||"").match(/\d+"\s*trabajo\s*\/\s*\d+"\s*cambio/)||[""])[0])}</p></div>`;
+  }
+  const pares=(x["Ejercicios"]||[]).map(get).filter(Boolean).map(e=>({t:e.titulo,ab:parejaAB(e["Notación"])})).filter(e=>e.ab);
+  if((x["Formato"]||[]).includes("Pareja")&&pares.length)
+    return `<div class="dg"><div class="note" style="margin-bottom:6px">Por parejas: A ataca y B defiende o sostiene; luego se cambia.</div>${pares.map(p=>`<div class="ab" style="margin:6px 0"><div class="a"><b>A</b>${esc(p.ab.a)}</div><div class="b"><b>B</b>${esc(p.ab.b)}</div></div>`).join("")}</div>`;
+  return "";
+}
+
+// ---------- Temporizador: propuesta a partir de la ficha ----------
+const num=s=>parseFloat(String(s).replace(",","."));
+function etiquetasNumeradas(t){const out=[];for(const m of t.matchAll(/(?:^|\s)(\d)\)\s*(.+?)(?=\s\d\)\s|$)/g))out.push(m[2].replace(/[.\s]+$/,""));return out}
+function sugerir(b,minSesion){
+  const t=String(b["Desarrollo"]||"").replace(/\s+/g," "),met=b["Método"]||"",dur=b["Duración (min)"]||minSesion||null;
+  const rolM=t.match(/(\d+)"\s*cada rol/),rol=rolM?+rolM[1]:0;
+  let m;
+  // Tabata
+  if(met==="Tabata"||/tabata/i.test(t)){
+    const r=+(t.match(/(\d+)\s*rondas/)||[])[1]||8,tw=t.match(/(\d+)"\s*(?:de\s*)?trabajo\s*\/\s*(\d+)"/);
+    return {p:{modo:"intervalos",rondas:r,trabajo:tw?+tw[1]:20,descanso:tw?+tw[2]:10,rol:0},de:"Tabata leído de la ficha"}}
+  // Circuito por estaciones
+  if(met==="Circuito/estaciones"||/estaciones/i.test(t)){
+    const nombres=[...(b["Físico"]||[]),...(b["Ejercicios"]||[])].map(titulo);
+    const est=+(t.match(/(\d+)\s*estaciones/)||[])[1]||nombres.length||4;
+    const tw=t.match(/(\d+)"\s*trabajo\s*\/\s*(\d+)"\s*(?:de\s*)?cambio/);
+    const vu=t.match(/(\d+)\s*vueltas(?:\s*con\s*(\d+(?:[.,]\d+)?)\s*min)?/);
+    if(tw)return {p:{modo:"circuito",estaciones:est,nombres,vueltas:vu?+vu[1]:3,trabajo:+tw[1],cambio:+tw[2],descansoVuelta:vu&&vu[2]?num(vu[2])*60:60},de:"Leído de la ficha: «"+tw[0]+(vu?" · "+vu[0]:"")+"»"}}
+  // Asaltos «3 asaltos de 3 min con 1 min», «3 rounds de 3' / 1'»
+  if((m=t.match(/(\d+)\s*(?:asaltos?|rounds?)(?:\s+de\s+[a-záéíóú]+)?\s+de\s+(\d+(?:[.,]\d+)?)\s*(?:min|')[^\d]{0,30}?(\d+(?:[.,]\d+)?)\s*(?:min|')/i))){
+    const r=+m[1],et=etiquetasNumeradas(t);
+    return {p:{modo:"intervalos",rondas:r,trabajo:num(m[2])*60,descanso:num(m[3])*60,rol,etiquetas:et.length===r?et:[]},de:"Leído de la ficha: «"+m[0]+"»"}}
+  // Fases con minutos «1) … (9 min). 2) … (8 min)»
+  const fases=[...t.matchAll(/(?:^|[.;:]\s*|\d\)\s*)([^.;:()]{3,80}?)\s*\(~?(\d+(?:[.,]\d+)?)\s*min\)/g)].map(x=>({nombre:x[1].trim(),seg:num(x[2])*60}));
+  if(fases.length>=2)return {p:{modo:"fases",fases,rol},de:"Fases y minutos leídos de la ficha"};
+  // «4 fases de ~6 min», «4 contras de 8' cada uno»
+  if((m=t.match(/(\d+)\s+([a-záéíóú]+)\s+de\s+~?(\d+(?:[.,]\d+)?)\s*(?:min|')\s*(?:cada uno)?/i))&&!/asalto|round|serie/i.test(m[2])){
+    const n=+m[1],et=etiquetasNumeradas(t);
+    return {p:{modo:"fases",fases:[...Array(n)].map((_,i)=>({nombre:et[i]||`${m[2][0].toUpperCase()+m[2].slice(1)} ${i+1}`,seg:num(m[3])*60})),rol},de:"Leído de la ficha: «"+m[0].trim()+"»"}}
+  // Intervalos «30"/30" ×6», «20" libre / 20" velocidad / 20" fuerza ×3»
+  if((m=t.match(/((?:\d+"\s*[^\/×\d"]*\/\s*)+\d+"\s*[^\/×\d"]*?)\s*[×x]\s*(\d+)/))){
+    const partes=m[1].split("/").map(s=>{const z=s.trim().match(/(\d+)"\s*(.*)/);return {seg:+z[1],nombre:z[2].trim()}});
+    const rep=+m[2],desc=partes.filter(p=>/descanso|pausa|cambio/i.test(p.nombre));
+    if(partes.length===2&&desc.length===1&&/descanso|pausa|cambio/i.test(partes[1].nombre))
+      return {p:{modo:"intervalos",rondas:rep,trabajo:partes[0].seg,descanso:partes[1].seg,rol:0,etiquetas:[...Array(rep)].map(()=>partes[0].nombre)},de:"Leído de la ficha: «"+m[0]+"»"};
+    const fs=[];for(let i=0;i<rep;i++)for(const p of partes)fs.push({nombre:(p.nombre||"Trabajo")+` (${i+1}/${rep})`,seg:p.seg,descanso:/descanso|pausa|cambio/i.test(p.nombre)});
+    return {p:{modo:"fases",fases:fs,rol:0},de:"Leído de la ficha: «"+m[0]+"»"}}
+  // «6 min por ejercicio» (escaleras)
+  if((m=t.match(/(\d+(?:[.,]\d+)?)\s*min por ejercicio/))){
+    const nombres=(b["Físico"]||[]).map(titulo);
+    if(nombres.length)return {p:{modo:"fases",fases:nombres.map(n=>({nombre:n,seg:num(m[1])*60})),rol:0},de:"Leído de la ficha: «"+m[0]+"», una fase por pieza"}}
+  if(met==="Asaltos"){
+    const r=dur?Math.max(1,Math.round((dur+1)/4)):3;
+    return {p:{modo:"intervalos",rondas:r,trabajo:180,descanso:60,rol},de:`La ficha no da los tiempos: propuesta estándar de 3'/1'${dur?` para ${dur} min`:""}. Ajústala si no es así.`}}
+  if(dur)return {p:{modo:"fases",fases:[{nombre:b.titulo,seg:dur*60}],rol},de:(b["Duración (min)"]?"Duración de la ficha":"Minutos que da la sesión")+`: ${dur} min${rol?`, cambio de rol cada ${rol}"`:""}`};
+  return {p:{modo:"crono",objetivo:0},de:"La ficha no da tiempos: cronómetro libre."};
+}
+const programaDe=(id,min)=>{const b=get(id);if(S.timers[id])return {p:S.timers[id],de:"Programa guardado en este móvil"};return b?sugerir(b,min):{p:{modo:"crono",objetivo:0},de:""}};
+function tramos(p){
+  const T=[],add=(tipo,seg,etiqueta,extra={})=>{if(seg>0)T.push({tipo,seg,etiqueta,...extra})};
+  add("prep",10,"");
+  if(p.modo==="intervalos")for(let r=1;r<=p.rondas;r++){add("trabajo",p.trabajo,(p.etiquetas||[])[r-1]||"",{ronda:`${r} / ${p.rondas}`,rol:p.rol});if(r<p.rondas)add("descanso",p.descanso,"Descanso",{ronda:`${r} / ${p.rondas}`})}
+  if(p.modo==="circuito")for(let v=1;v<=p.vueltas;v++){for(let e=1;e<=p.estaciones;e++){add("trabajo",p.trabajo,`Estación ${e}${p.nombres?.[e-1]?": "+p.nombres[e-1]:""}`,{ronda:`Vuelta ${v} / ${p.vueltas}`});if(e<p.estaciones)add("descanso",p.cambio,"Cambio de estación",{ronda:`Vuelta ${v} / ${p.vueltas}`,sig:p.nombres?.[e]||""})}
+    if(v<p.vueltas)add("descanso",p.descansoVuelta,"Descanso entre vueltas",{ronda:`Vuelta ${v} / ${p.vueltas}`})}
+  if(p.modo==="fases")p.fases.forEach((f,i)=>add(f.descanso?"descanso":"trabajo",f.seg,f.nombre,{ronda:`Fase ${i+1} / ${p.fases.length}`,rol:f.descanso?0:p.rol}));
+  if(p.modo==="crono")T.push({tipo:"trabajo",seg:p.objetivo>0?p.objetivo:Infinity,etiqueta:p.objetivo>0?"":"Cronómetro libre",crono:!(p.objetivo>0)});
+  let t0=0;for(const x of T){x.t0=t0;t0+=x.seg}
+  return T;
+}
+const mmss=s=>{if(!isFinite(s))return"∞";s=Math.max(0,Math.ceil(s));const m=Math.floor(s/60),r=s%60;return m+":"+String(r).padStart(2,"0")};
+const resumenProg=p=>p.modo==="intervalos"?`${p.rondas} × ${mmss(p.trabajo)} / ${mmss(p.descanso)}${p.rol?` · cambio de rol cada ${p.rol}"`:""}`:
+  p.modo==="circuito"?`${p.estaciones} estaciones · ${p.trabajo}" + ${p.cambio}" · ${p.vueltas} vueltas`:
+  p.modo==="fases"?`${p.fases.length} fases · ${mmss(p.fases.reduce((a,f)=>a+f.seg,0))}${p.rol?` · cambio de rol cada ${p.rol}"`:""}`:
+  p.objetivo>0?`Cronómetro hasta ${mmss(p.objetivo)}`:"Cronómetro libre";
+
+// ---------- Sonido, vibración y pantalla encendida ----------
+const AU={ctx:null,nodos:[],vivo:null,
+  init(){if(!this.ctx){const C=window.AudioContext||window.webkitAudioContext;if(C)this.ctx=new C()}if(this.ctx&&this.ctx.state==="suspended")this.ctx.resume();return this.ctx},
+  tono(at,f,dur,vol=.5,tipo="sine"){const c=this.ctx;if(!c||!S.aj.sonido)return;const o=c.createOscillator(),g=c.createGain();o.type=tipo;o.frequency.value=f;
+    g.gain.setValueAtTime(0,at);g.gain.linearRampToValueAtTime(vol,at+.01);g.gain.exponentialRampToValueAtTime(.001,at+dur);o.connect(g).connect(c.destination);o.start(at);o.stop(at+dur+.05);this.nodos.push(o)},
+  campana(at,n=3){for(let i=0;i<n;i++){this.tono(at+i*.32,1180,.9,.55,"triangle");this.tono(at+i*.32,2360,.5,.18)}},
+  fin(at){this.tono(at,520,1.1,.6,"square")},
+  aviso(at){this.tono(at,1600,.08,.5,"square");this.tono(at+.18,1600,.08,.5,"square")},
+  rol(at){this.tono(at,880,.15,.5,"square");this.tono(at+.22,880,.15,.5,"square")},
+  tic(at){this.tono(at,1000,.07,.35,"square")},
+  cancelar(){for(const o of this.nodos){try{o.stop(0)}catch(e){}}this.nodos=[]},
+  // Un sonido inaudible continuo mantiene vivo el audio con la pantalla bloqueada (Android)
+  mantener(on){const c=this.ctx;if(!c)return;if(on&&!this.vivo){const o=c.createOscillator(),g=c.createGain();g.gain.value=.0001;o.frequency.value=40;o.connect(g).connect(c.destination);o.start();this.vivo=o}
+    if(!on&&this.vivo){try{this.vivo.stop()}catch(e){}this.vivo=null}}};
+function programarSonidos(T,desde){
+  const c=AU.ctx;if(!c)return;AU.cancelar();const base=c.currentTime-desde;
+  for(const x of T){
+    const ini=x.t0,fin=x.t0+x.seg;
+    if(ini>=desde-.05){if(x.tipo==="trabajo")AU.campana(base+ini,x.crono?1:3);else if(x.tipo==="descanso")AU.fin(base+ini)}
+    if(x.tipo==="prep")for(let k=3;k>=1;k--)if(fin-k>=desde)AU.tic(base+fin-k);
+    if(x.tipo==="trabajo"&&isFinite(x.seg)){
+      if(x.seg>=30&&fin-10>=desde)AU.aviso(base+fin-10);
+      if(x.rol)for(let k=ini+x.rol;k<fin-1;k+=x.rol)if(k>=desde)AU.rol(base+k);
+    }
+    if(x.tipo==="descanso"&&x.seg>=15&&fin-5>=desde)AU.tic(base+fin-5);
+  }
+  const ult=T.at(-1);if(ult&&isFinite(ult.t0+ult.seg)){const f=ult.t0+ult.seg;if(f>=desde)AU.campana(base+f,4)}
+}
+const vibrar=p=>{if(S.aj.vibrar&&navigator.vibrate)try{navigator.vibrate(p)}catch(e){}};
+let wake=null;
+async function pantallaEncendida(on){try{if(on&&"wakeLock" in navigator&&!wake){wake=await navigator.wakeLock.request("screen");wake.addEventListener("release",()=>{wake=null})}if(!on&&wake){await wake.release();wake=null}}catch(e){}}
+
+// ---------- Modo clase ----------
+const C={on:false,pasos:[],i:0,T:[],corriendo:false,inicio:0,acum:0,seg:-1,sesion:null,timer:null};
+function abrirClase(pasos,sesion){
+  if(!pasos.length){toast("Esta sesión no tiene bloques enlazados");return}
+  Object.assign(C,{on:true,pasos,i:0,sesion,corriendo:false,acum:0,seg:-1});
+  cargarPaso();$("#clase").classList.add("on");document.body.style.overflow="hidden";
+  pantallaEncendida(true);history.pushState({clase:1},"");pintarClase();
+}
+function cargarPaso(){const p=C.pasos[C.i];const pr=p.prog?{p:p.prog,de:"Asaltos libres"}:programaDe(p.id,p.min);C.prog=pr;C.T=tramos(pr.p);C.acum=0;C.corriendo=false;C.seg=-1;AU.cancelar()}
+const transcurrido=()=>C.acum+(C.corriendo?(performance.now()-C.inicio)/1000:0);
+function arrancar(){AU.init();AU.mantener(true);C.inicio=performance.now();C.corriendo=true;programarSonidos(C.T,C.acum);
+  if("mediaSession" in navigator)try{navigator.mediaSession.metadata=new MediaMetadata({title:titulo(C.pasos[C.i].id)||"Asaltos",artist:"Esquina del Entrenador"})}catch(e){}
+  tic()}
+function parar(){C.acum=transcurrido();C.corriendo=false;AU.cancelar();AU.mantener(false);pintarClase()}
+function irPaso(d){const n=C.i+d;if(n<0||n>=C.pasos.length)return;const seguia=C.corriendo;C.i=n;cargarPaso();if(seguia)arrancar();pintarClase()}
+function saltarTramo(){const e=transcurrido(),x=C.T.find(x=>e<x.t0+x.seg);if(!x||!isFinite(x.seg))return;C.acum=x.t0+x.seg+.01;if(C.corriendo){C.inicio=performance.now();programarSonidos(C.T,C.acum)}pintarClase()}
+function tic(){clearTimeout(C.timer);if(!C.on)return;pintarCrono();if(C.corriendo)C.timer=setTimeout(tic,200)}
+function salirClase(desdeAtras){C.on=false;C.corriendo=false;clearTimeout(C.timer);AU.cancelar();AU.mantener(false);pantallaEncendida(false);
+  $("#clase").classList.remove("on");$("#clase").className="";document.body.style.overflow="";if(!desdeAtras)history.back()}
+window.addEventListener("popstate",()=>{if(C.on)salirClase(true)});
+document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible"&&C.on){pantallaEncendida(true);AU.init();pintarCrono()}});
+function pintarClase(){
+  const p=C.pasos[C.i],b=get(p.id);
+  const piezas=b?[...(b["Ejercicios"]||[]),...(b["Físico"]||[])].map(get).filter(Boolean):[];
+  $("#clase").innerHTML=`<div class="top"><div class="tt"><div class="fz">${esc(p.fase||(C.sesion?"Bloque":""))} · ${C.i+1} de ${C.pasos.length}</div><div class="bt">${esc(b?b.titulo:"Asaltos libres")}</div></div>
+    <button class="ic" data-c="prog" aria-label="Ajustar el tiempo">⚙</button><button class="ic" data-c="salir" aria-label="Salir del modo clase">✕</button></div>
+    <div class="barra"><i id="cbar"></i></div>
+    <div class="mid" id="cmid" data-c="pp"><div class="est" id="cest"></div><div class="rel" id="crel"></div><div class="eti" id="ceti"></div><div class="rnd" id="crnd"></div></div>
+    ${piezas.length?`<div class="pz">${piezas.map(e=>`<div><b>${esc(e.titulo)}</b>${e["Notación"]&&norm(e["Notación"])!==norm(e.titulo)?` · <span style="font-family:var(--mono)">${esc(e["Notación"])}</span>`:""}</div>`).join("")}</div>`:""}
+    <div class="ctl"><button data-c="ant" ${C.i?"":"disabled"} aria-label="Bloque anterior">◀ Bloque</button><button class="pp" data-c="pp" id="cpp"></button><button data-c="sig" aria-label="${C.i<C.pasos.length-1?"Bloque siguiente":"Terminar"}">${C.i<C.pasos.length-1?"Bloque ▶":"Terminar"}</button></div>
+    <div class="hint">${esc(resumenProg(C.prog.p))} · Toca el reloj para pausar · Desliza para cambiar de bloque · <button data-c="saltar" style="background:none;border:0;color:#fff;text-decoration:underline;padding:0">saltar tramo</button></div>`;
+  pintarCrono();
+}
+function pintarCrono(){
+  if(!C.on)return;const e=transcurrido(),T=C.T,i=T.findIndex(x=>e<x.t0+x.seg),el=$("#clase");
+  if(i<0){el.className="on fin";$("#cest").textContent="¡Tiempo!";$("#crel").textContent="0:00";$("#ceti").textContent=C.i<C.pasos.length-1?"Siguiente: "+titulo(C.pasos[C.i+1].id):"Fin de la clase";$("#crnd").textContent="";$("#cbar").style.width="100%";
+    if(C.corriendo){C.corriendo=false;C.acum=e;AU.mantener(false);vibrar([400,150,400,150,400])}$("#cpp").textContent=C.i<C.pasos.length-1?"Siguiente ▶":"Cerrar clase";return}
+  const x=T[i];
+  if(i!==C.seg){if(C.seg>=0&&C.corriendo)vibrar(x.tipo==="trabajo"?[300,120,300]:[600]);C.seg=i}
+  el.className="on "+(x.tipo==="prep"?"":x.tipo);
+  $("#cest").textContent=x.crono?"Cronómetro":x.tipo==="prep"?(C.corriendo?"Preparados":"Listo"):x.tipo==="trabajo"?"Trabajo":"Descanso";
+  $("#crel").textContent=x.crono?mmss(e-x.t0):mmss(x.t0+x.seg-e);
+  $("#ceti").textContent=x.tipo==="descanso"&&x.sig?"Siguiente: "+x.sig:x.tipo==="prep"?(T[i+1]?.etiqueta||""):x.etiqueta||"";
+  $("#crnd").textContent=x.ronda||"";
+  const tot=T.at(-1).t0+T.at(-1).seg;$("#cbar").style.width=isFinite(tot)?Math.min(100,e/tot*100)+"%":"0";
+  $("#cpp").textContent=C.corriendo?"❚❚ Pausa":e>0?"▶ Seguir":"▶ Empezar";
+}
+// Gestos con un dedo: tocar el reloj = pausa; deslizar a los lados = cambiar de bloque
+(()=>{const cl=$("#clase");let x0=null,y0=0,t0=0;
+  cl.addEventListener("pointerdown",e=>{x0=e.clientX;y0=e.clientY;t0=Date.now()});
+  cl.addEventListener("pointerup",e=>{if(x0==null)return;const dx=e.clientX-x0,dy=e.clientY-y0;x0=null;
+    if(Math.abs(dx)>70&&Math.abs(dx)>Math.abs(dy)*1.5&&Date.now()-t0<800){irPaso(dx<0?1:-1);cl.dataset.swiped=Date.now()}});
+  cl.addEventListener("click",e=>{if(Date.now()-(+cl.dataset.swiped||0)<400)return;const t=e.target.closest("[data-c]");if(!t)return;const c=t.dataset.c;
+    if(c==="pp"){const e2=transcurrido(),fin=C.T.findIndex(x=>e2<x.t0+x.seg)<0;
+      if(fin){if(C.i<C.pasos.length-1)irPaso(1);else{const s=C.sesion;salirClase();if(s&&baseDe(s)==="sesiones")setTimeout(()=>ir("/cerrar/"+s),50)}return}
+      C.corriendo?parar():arrancar();pintarCrono()}
+    if(c==="ant")irPaso(-1);
+    if(c==="sig"){if(C.i<C.pasos.length-1)irPaso(1);else{const s=C.sesion;salirClase();if(s&&baseDe(s)==="sesiones")setTimeout(()=>ir("/cerrar/"+s),50)}}
+    if(c==="saltar")saltarTramo();
+    if(c==="salir")salirClase();
+    if(c==="prog"){if(C.corriendo)parar();editarPrograma()}});
+})();
+function editarPrograma(){
+  const paso=C.pasos[C.i],id=paso.id,p=JSON.parse(JSON.stringify(C.prog.p));
+  const b=id?get(id):null;
+  const campo=(k,etq,v)=>`<label class="f">${etq}<input type="text" inputmode="numeric" data-k="${k}" value="${esc(v)}"></label>`;
+  const cuerpo=()=>p.modo==="intervalos"?campo("rondas","Asaltos o rondas",p.rondas)+campo("trabajo","Trabajo (m:ss)",mmss(p.trabajo))+campo("descanso","Descanso (m:ss)",mmss(p.descanso))+campo("rol",'Cambio de rol cada (segundos, 0 = no)',p.rol||0):
+    p.modo==="circuito"?campo("estaciones","Estaciones",p.estaciones)+campo("vueltas","Vueltas",p.vueltas)+campo("trabajo","Trabajo por estación (m:ss)",mmss(p.trabajo))+campo("cambio","Cambio (m:ss)",mmss(p.cambio))+campo("descansoVuelta","Descanso entre vueltas (m:ss)",mmss(p.descansoVuelta)):
+    p.modo==="fases"?`<label class="f">Fases: una por línea, «nombre | m:ss»<textarea data-k="fases" rows="6">${esc(p.fases.map(f=>`${f.nombre} | ${mmss(f.seg)}${f.descanso?" | descanso":""}`).join("\n"))}</textarea></label>`+campo("rol",'Cambio de rol cada (segundos, 0 = no)',p.rol||0):
+    campo("objetivo","Hasta (m:ss, 0 = libre)",p.objetivo?mmss(p.objetivo):0);
+  const pinta=()=>{$("#sheet").innerHTML=`<div class="sheet" data-s="fondo"><div role="dialog" aria-label="Ajustar el tiempo"><h3>Tiempo del bloque</h3>
+    ${b?`<p class="note">${esc(C.prog.de)}</p>${b["Desarrollo"]?`<p class="note"><b>Desarrollo:</b> ${esc(b["Desarrollo"])}</p>`:""}`:""}
+    <label class="f">Tipo<select data-k="modo">${[["intervalos","Asaltos / intervalos"],["circuito","Circuito por estaciones"],["fases","Fases seguidas"],["crono","Cronómetro"]].map(([k,t])=>`<option value="${k}"${k===p.modo?" selected":""}>${t}</option>`).join("")}</select></label>
+    ${cuerpo()}<div class="bar" style="margin-top:10px"><button class="btn pri" data-s="ok">Guardar</button>${b?`<button class="btn" data-s="prop">Volver a la propuesta</button>`:""}<button class="btn" data-s="no">Cancelar</button></div></div></div>`};
+  const seg=v=>{v=String(v).trim();if(v.includes(":")){const [m,s]=v.split(":");return (+m||0)*60+(+s||0)}return +v||0};
+  const leer=()=>{$("#sheet").querySelectorAll("[data-k]").forEach(el=>{const k=el.dataset.k,v=el.value;
+    if(k==="modo")return;if(k==="fases")p.fases=v.split("\n").filter(l=>l.trim()).map(l=>{const z=l.split("|").map(s=>s.trim());return {nombre:z[0],seg:seg(z[1]||0),descanso:/descanso/i.test(z[2]||"")}});
+    else if(["rondas","estaciones","vueltas","rol"].includes(k))p[k]=Math.max(k==="rol"?0:1,parseInt(v)||0);else p[k]=seg(v)})};
+  pinta();
+  $("#sheet").onchange=e=>{if(e.target.dataset.k==="modo"){leer();const m=e.target.value;p.modo=m;
+    if(m==="intervalos"){p.rondas=p.rondas||3;p.trabajo=p.trabajo||180;p.descanso=p.descanso??60}
+    if(m==="circuito"){p.estaciones=p.estaciones||4;p.vueltas=p.vueltas||3;p.trabajo=p.trabajo||45;p.cambio=p.cambio??15;p.descansoVuelta=p.descansoVuelta??60;p.nombres=p.nombres||(b?(b["Físico"]||[]).map(titulo):[])}
+    if(m==="fases")p.fases=p.fases||[{nombre:b?b.titulo:"Fase 1",seg:600}];
+    if(m==="crono")p.objetivo=p.objetivo||0;pinta()}};
+  $("#sheet").onclick=e=>{const s=e.target.dataset.s;if(!s)return;
+    if(s==="fondo"&&e.target.classList.contains("sheet")||s==="no"){$("#sheet").innerHTML="";return}
+    if(s==="prop"){if(id)delete S.timers[id];guardar();cerrarHoja();return}
+    if(s==="ok"){leer();if(id){S.timers[id]=p;guardar()}else paso.prog=p;cerrarHoja()}};
+  const cerrarHoja=()=>{$("#sheet").innerHTML="";cargarPaso();pintarClase()};
+}
+
+// ---------- Cerrar una clase ----------
+function vCerrar(id){
+  const s=get(id);if(!s)return noEsta();
+  const prev=S.pend.find(p=>p.tipo==="cierre"&&p.sesion.id===id)||{};
+  return `<button class="back" onclick="history.back()">← Atrás</button><h2 class="t">Cerrar la clase</h2><p><b>${esc(s.titulo)}</b></p>
+  ${s["Plantilla"]?`<p class="note">Es una plantilla: al pasarlo a Notion se crea la clase con fecha de hoy a partir de ella, como hace la Rutina.</p>`:""}
+  <div class="form"><label class="f">¿Cómo fue?<div class="chiprow">${["Hecha","Saltada"].map(e=>`<button class="chip" data-estado="${e}" aria-pressed="${(prev.estado||"Hecha")===e}">${e}</button>`).join("")}</div></label>
+  <label class="f">Fecha de la clase<input type="text" id="c-fecha" value="${esc(prev.fecha||(s["Plantilla"]?hoyISO():s["Fecha"]||hoyISO()))}"></label>
+  <label class="f">Sensaciones<textarea id="c-sens" placeholder="Cómo respondió el grupo, qué salió y qué no">${esc(prev.sensaciones||"")}</textarea></label>
+  <label class="f">Para la próxima (opcional)<textarea id="c-prox" placeholder="Qué ajustar en la siguiente clase">${esc(prev.paraLaProxima||"")}</textarea></label>
+  <label class="f" id="c-lugarw" style="${(prev.estado||"Hecha")==="Saltada"?"":"display:none"}">Qué se hizo en su lugar<input type="text" id="c-lugar" value="${esc(prev.enSuLugar||"")}"></label>
+  <p class="note">Solo «Nº alumnos aprox»: no apuntes nombres de alumnos.</p>
+  <div class="bar"><button class="btn pri" data-guardarcierre="${id}">Guardar para enviar a Notion</button></div></div>`;
+}
+function guardarCierre(id){
+  const s=get(id),estado=document.querySelector("[data-estado][aria-pressed=true]")?.dataset.estado||"Hecha";
+  const c={tipo:"cierre",uid:uid(),creado:new Date().toISOString(),estado,fecha:$("#c-fecha").value.trim(),
+    sensaciones:$("#c-sens").value.trim(),paraLaProxima:$("#c-prox").value.trim(),enSuLugar:$("#c-lugar").value.trim(),
+    sesion:{id,titulo:s.titulo,plantilla:!!s["Plantilla"],plan:(s["Plan"]||[])[0]||null,semana:s["Semana"]||null}};
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(c.fecha)){toast("La fecha va como AAAA-MM-DD");return}
+  if(estado==="Hecha"&&!c.sensaciones){toast("Apunta las Sensaciones: es lo que usa la Rutina para preparar la siguiente");return}
+  if(estado==="Saltada"&&!c.enSuLugar){toast("Di qué se hizo en su lugar");return}
+  S.pend=S.pend.filter(p=>!(p.tipo==="cierre"&&p.sesion.id===id));S.pend.push(c);
+  if(!s["Plantilla"]){s["Estado"]=estado;s["Sensaciones"]=c.sensaciones||s["Sensaciones"]}
+  guardar();toast("Guardado. Mándalo a Notion desde Enviar");ir("/enviar");
+}
+
+// ---------- Crear y editar Ejercicios y Bloques (criterio-fichas-boxeo) ----------
+// Notación → Fundamentos (tabla del criterio). Es una sugerencia: se confirma a mano.
+const NOT_FUND=[[/media\s*esq/,"media esquiva"],[/\besq\.?\s*rot|\brot\b|\broll\b|rotatoria/,"esquiva rotatoria"],[/\besq\b|\besq\.|esquiva(?!\s*rot)/,"esquiva / slip"],
+  [/ballesta/,"ballesta"],[/palmeo/,"palmeo"],[/\bbloq/,"bloqueo"],[/pivot/,"pivote"],[/paso atras/,"paso atras"],[/pendulo/,"paso pendulo"],[/pasos? en v/,"pasos en v"],[/cambio de guardia/,"cambio de guardia"],
+  [/(^|[^\d"'])1(?![\d"'])|\bjab\b/,"(1)"],[/(^|[^\d"'])2(?![\d"'])|\bdir\b|directo|\bcross\b/,"(2)"],[/(^|[^\d"'])3(?![\d"'])|cro\.?\s*izq|crochet izq/,"(3)"],[/(^|[^\d"'])4(?![\d"'])|cro\.?\s*der|crochet der/,"(4)"],
+  [/(^|[^\d"'])5(?![\d"'])|upper izq/,"(5)"],[/(^|[^\d"'])6(?![\d"'])|upper der/,"(6)"]];
+function fundDesdeNotacion(not){
+  let t=norm(not).replace(/\d+\s*("|'|min\b|s\b)|[×x]\s*\d+/g," ");
+  const out=new Set(),fs=lista("fundamentos");
+  for(const [re,clave] of NOT_FUND){if(!re.test(t))continue;
+    const f=fs.find(f=>norm(f.titulo).includes(clave));if(f)out.add(f.id);
+    if(clave==="media esquiva")t=t.replace(/media\s*esq\w*\.?/g," ")}
+  return [...out];
+}
+const PLANTILLA_EJ={"Para qué sirve":"","Secuencia":"","Puntos clave":"","Errores comunes":"","Cómo entrenarla":""};
+function cuerpoEj(c){const li=(t,p)=>t.split("\n").filter(l=>l.trim()).map((l,i)=>p==="1"?`${i+1}. ${l.trim()}`:`${p} ${l.trim()}`).join("\n");
+  return [c["Para qué sirve"]?`> 🎯 **Para qué sirve** — ${c["Para qué sirve"]}`:"",c["Secuencia"]?"## Secuencia\n"+li(c["Secuencia"],"1"):"",c["Puntos clave"]?"## Puntos clave\n"+li(c["Puntos clave"],"-"):"",
+    c["Errores comunes"]?"## Errores comunes\n"+li(c["Errores comunes"],"-"):"",c["Cómo entrenarla"]?"## Cómo entrenarla\n"+li(c["Cómo entrenarla"],"- [ ]"):""].filter(Boolean).join("\n")}
+function seccionesDe(cuerpo){const out={};let k=null;for(const l of (cuerpo||"").split("\n")){
+  const cal=l.match(/^>\s*🎯\s*\*\*Para qué sirve\s*(?:—\s*)?\*\*\s*(?:—\s*)?(.*)/);if(cal){out["Para qué sirve"]=cal[1].replace(/\[([^\]]*)\]\(#\w+\)/g,"$1");continue}
+  const h=l.match(/^##\s+(.*)/);if(h){k=h[1].trim();out[k]="";continue}
+  if(k)out[k]+=(out[k]?"\n":"")+l.replace(/^\s*(\d+\.|-\s\[[ x]\]|-)\s*/,"").replace(/\[([^\]]*)\]\(#\w+\)/g,"$1")}
+  return out}
+function vEditor(base,id){
+  if(base!=="ejercicios"&&base!=="bloques")return noEsta();
+  const x=id?get(id):{};if(id&&!x)return noEsta();
+  const E=S.edit&&S.edit.base===base&&S.edit.id===(id||null)?S.edit:(S.edit={base,id:id||null,v:JSON.parse(JSON.stringify(x||{})),sec:seccionesDe(x?.cuerpo),proc:"",err:[]});
+  const v=E.v,sel=(k,ops,req)=>`<label class="f">${k}${req?' <span class="req">*</span>':""}<select data-e="${k}"><option value="">—</option>${ops.map(o=>`<option${v[k]===o?" selected":""}>${esc(o)}</option>`).join("")}</select></label>`;
+  const multi=(k,ops,req)=>`<label class="f">${k}${req?' <span class="req">*</span>':""}<div class="chiprow">${ops.map(o=>`<button class="chip" data-m="${esc(k)}" data-val="${esc(o)}" aria-pressed="${(v[k]||[]).includes(o)}">${esc(o)}</button>`).join("")}</div></label>`;
+  const txt=(k,req,ph="",area)=>`<label class="f">${k}${req?' <span class="req">*</span>':""}${area?`<textarea data-e="${k}" placeholder="${esc(ph)}">${esc(v[k]||"")}</textarea>`:`<input type="text" data-e="${k}" value="${esc(v[k]??"")}" placeholder="${esc(ph)}">`}</label>`;
+  const sec=(k,ph)=>`<label class="f">${k}<textarea data-sec="${k}" placeholder="${esc(ph)}">${esc(E.sec[k]||"")}</textarea></label>`;
+  const fuentes=`<label class="f">Fuente (si sale de una registrada)<select data-e="Fuente1"><option value="">— ninguna —</option>${lista("fuentes").map(f=>`<option value="${f.id}"${(v["Fuente"]||[])[0]===f.id?" selected":""}>${esc(f.titulo)}</option>`).join("")}</select></label>
+    <label class="f">Procedencia (si no hay Fuente) <span class="req">*</span><input type="text" id="e-proc" value="${esc(E.proc)}" placeholder="p. ej. aportado por mí, o Instagram @cuenta"></label>`;
+  const errs=E.err.length?`<div class="err">${E.err.map(e=>`<div>${e}</div>`).join("")}</div>`:"";
+  let h=`<button class="back" onclick="history.back()">← Atrás</button><h2 class="t">${id?"Editar":"Nuevo"} ${base==="ejercicios"?"ejercicio":"bloque"}</h2>
+  <p class="note">Sigue el criterio de las fichas: lo que guardes aquí se manda a Notion por correo y lo crea la Rutina. <span class="req" style="color:var(--rojo)">*</span> = obligatorio.</p>${errs}`;
+  if(base==="ejercicios"){
+    const fs=lista("fundamentos").sort((a,b)=>(a["Categoría"]||"").localeCompare(b["Categoría"]||"")||a.titulo.localeCompare(b.titulo));
+    h+=`<div class="form">${txt("titulo",true,'Notación corta, no frase: "1-2-cro izq"')}${txt("Notación",true,'A: 1-2 / B: palmeo-esq')}
+    ${sel("Tipo",opc("ejercicios","Tipo"),true)}${sel("Grupo",opc("ejercicios","Grupo"),true)}${sel("Nivel",OPC.Nivel,true)}${sel("Distancia",OPC.Distancia)}${sel("Zona",OPC.Zona)}${txt("Nº golpes",false,"0 si es por tiempo")}
+    ${multi("Intención",OPC["Intención"])}${multi("Se trabaja en",OPC["Se trabaja en"],true)}
+    <label class="f">Fundamentos <span class="req">*</span><button class="btn sm" data-sugerir="1" style="align-self:flex-start">Sugerir desde la notación</button><div class="chiprow">${fs.map(f=>`<button class="chip" data-m="Fundamentos" data-val="${f.id}" aria-pressed="${(v["Fundamentos"]||[]).includes(f.id)}">${esc(f.titulo)}</button>`).join("")}</div></label>
+    ${fuentes}</div><div class="form"><b>Cuerpo de la ficha</b>${sec("Para qué sirve","Una frase")}${sec("Secuencia","Un paso por línea (A: … / B: …)")}${sec("Puntos clave","Uno por línea")}${sec("Errores comunes","Uno por línea (si no los tienes, se toman los de sus Fundamentos)")}${sec("Cómo entrenarla","Contexto, uno por línea")}</div>`;
+  }else{
+    const piezas=[...(v["Ejercicios"]||[]),...(v["Físico"]||[])];
+    h+=`<div class="form">${txt("titulo",true,"Formato — Qué, p. ej. «Saco — Pegar y salir»")}
+    ${sel("Tipo",opc("bloques","Tipo"),true)}${multi("Formato",OPC.Formato,true)}${sel("Método",OPC["Método"],true)}${txt("Duración (min)",false,"Solo si la sabes")}${sel("Nivel",OPC.Nivel,true)}
+    ${multi("Objetivo",OPC["Intención"])}${sel("Zona",OPC.Zona)}${sel("Distancia",OPC.Distancia)}
+    ${txt("Desarrollo",true,'La estructura: orden, series o asaltos, descanso. Sin técnica. P. ej. «3 asaltos de 3 min con 1 min de descanso»',true)}${txt("Notas",false,"El ojo del entrenador: por qué así, seguridad, cómo progresar",true)}${fuentes}</div>
+    <div class="form"><b>Piezas</b> <span class="req" style="color:var(--rojo)">*</span> <span class="note">en el orden en que se hacen</span>
+    <div class="ord" style="margin:8px 0">${piezas.map((p,i)=>`<div class="it"><span class="n">${i+1}</span><span>${esc(titulo(p))} <span class="note">· ${baseDe(p)==="fisico"?"Físico":"Ejercicio"}</span></span><span><button data-sube="${i}" aria-label="Subir">↑</button> <button data-quita="${p}" aria-label="Quitar">✕</button></span></div>`).join("")||'<div class="note">Ninguna todavía.</div>'}</div>
+    <input type="search" id="e-buscap" placeholder="Buscar un ejercicio o un físico para añadirlo…" value="${esc(E.qp||"")}"><div class="pick" id="e-pick" style="margin-top:6px">${pickPiezas(E)}</div>
+    <label style="display:flex;gap:8px;align-items:center;margin-top:8px;font-family:var(--body);text-transform:none;letter-spacing:0;font-weight:500;color:var(--ink)"><input type="checkbox" id="e-regla"${E.regla?" checked":""}> Es una regla de formato sin técnica propia (p. ej. «Sparring técnico: solo golpes rectos»)</label>
+    <p class="note">¿Falta una pieza? Créala antes como <a href="#/nuevo/ejercicios">ejercicio nuevo</a> y vuelve.</p></div>
+    <div class="form"><b>Cuerpo de la ficha</b>${sec("Para qué sirve","Una o dos frases")}${sec("Cómo entrenarlo","Reglas de ejecución, una por línea (rotación de roles, variante fácil…)")}</div>`;
+  }
+  h+=`<div class="bar" style="margin:12px 0 30px"><button class="btn pri big" data-guardarficha="1">Guardar</button><button class="btn" onclick="history.back()">Cancelar</button></div>`;
+  return h;
+}
+function pickPiezas(E){
+  const q=norm(E.qp||"");if(!q)return '<div class="note">Escribe para buscar.</div>';
+  const ya=new Set([...(E.v["Ejercicios"]||[]),...(E.v["Físico"]||[])]);
+  const xs=[...lista("ejercicios"),...lista("fisico")].filter(x=>!ya.has(x.id)&&norm(x.titulo+" "+(x["Notación"]||"")).includes(q)).slice(0,30);
+  return xs.map(x=>`<button class="btn sm" style="justify-content:flex-start;text-align:left" data-anade="${x.id}">+ ${esc(x.titulo)} <span class="note">· ${baseDe(x.id)==="fisico"?"Físico":"Ejercicio"}</span></button>`).join("")||'<div class="note">Nada con ese nombre.</div>';
+}
+function leerEditor(){
+  const E=S.edit;document.querySelectorAll("[data-e]").forEach(el=>{const k=el.dataset.e;let val=el.value.trim();
+    if(k==="Fuente1"){E.v["Fuente"]=val?[val]:[];return}
+    if(k==="Nº golpes"||k==="Duración (min)"){E.v[k]=val===""?null:Number(val.replace(",","."));return}
+    E.v[k]=val||null});
+  document.querySelectorAll("[data-sec]").forEach(el=>E.sec[el.dataset.sec]=el.value.trim());
+  if($("#e-proc"))E.proc=$("#e-proc").value.trim();if($("#e-regla"))E.regla=$("#e-regla").checked;if($("#e-buscap"))E.qp=$("#e-buscap").value;
+}
+function validar(E){
+  const v=E.v,err=[],otros=lista(E.base).filter(x=>x.id!==E.id);
+  const falta=k=>!v[k]||(Array.isArray(v[k])&&!v[k].length);
+  if(E.base==="ejercicios"){
+    for(const k of ["titulo","Notación","Tipo","Grupo","Nivel","Se trabaja en","Fundamentos"])if(falta(k))err.push(`Falta «${k==="titulo"?"Ejercicio":k}».`);
+    if(v["Nº golpes"]!=null&&isNaN(v["Nº golpes"]))err.push("«Nº golpes» tiene que ser un número.");
+    const d=otros.find(x=>norm(x["Notación"])&&norm(x["Notación"])===norm(v["Notación"])||norm(x.titulo)===norm(v.titulo));
+    if(d)err.push(`Ya existe: <a class="int" href="#/f/${d.id}">${esc(d.titulo)}</a>. Edita esa en vez de duplicarla (P2).`);
+  }else{
+    for(const k of ["titulo","Tipo","Formato","Método","Nivel","Desarrollo"])if(falta(k))err.push(`Falta «${k==="titulo"?"Bloque":k}».`);
+    if(v.titulo&&!/\s—\s/.test(v.titulo))err.push("El título va como «Formato — Qué» (con raya: —).");
+    const piezas=[...(v["Ejercicios"]||[]),...(v["Físico"]||[])];
+    if(!piezas.length&&!E.regla)err.push("Un bloque se monta con piezas que ya tienen ficha: añade Ejercicios o Físico (o marca que es una regla de formato).");
+    const clave=x=>[...(x["Ejercicios"]||[]),...(x["Físico"]||[])].sort().join(",")+"|"+(x["Método"]||"");
+    const d=otros.find(x=>norm(x.titulo)===norm(v.titulo)||(piezas.length&&clave(x)===clave(v)));
+    if(d)err.push(`Ya existe: <a class="int" href="#/f/${d.id}">${esc(d.titulo)}</a> (${norm(d.titulo)===norm(v.titulo)?"mismo nombre":"mismas piezas y mismo método"}). Edita esa en vez de duplicarla (P2).`);
+  }
+  if(!(v["Fuente"]||[]).length&&!E.proc&&!E.id)err.push("Di de dónde sale: una Fuente o la procedencia (P5).");
+  return err;
+}
+function guardarFicha(){
+  leerEditor();const E=S.edit;E.err=validar(E);if(E.err.length){render();window.scrollTo(0,0);return}
+  const v={...E.v};
+  if(E.base==="ejercicios")v.cuerpo=cuerpoEj(E.sec);
+  else{const piezas=[...(v["Ejercicios"]||[]),...(v["Físico"]||[])];
+    v.cuerpo=[E.sec["Para qué sirve"]?`> 🎯 **Para qué sirve —** ${E.sec["Para qué sirve"]}`:"",piezas.length?"## Estructura\n"+piezas.map((p,i)=>`${i+1}. [${titulo(p)}](#${p})`).join("\n"):"",
+      E.sec["Cómo entrenarlo"]?"## Cómo entrenarlo\n"+E.sec["Cómo entrenarlo"].split("\n").filter(l=>l.trim()).map(l=>"- [ ] "+l.trim()).join("\n"):""].filter(Boolean).join("\n")}
+  if(E.proc)v.cuerpo+=`\n\n*Procedencia: ${E.proc}.*`;
+  const id=E.id||("loc"+uid().padEnd(29,"0")).slice(0,32);
+  const accion=E.id&&!String(E.id).startsWith("loc")?"cambio":"nuevo";
+  const antes=E.id&&!String(E.id).startsWith("loc")?(S.datos?.[E.base]||[]).find(x=>x.id===E.id):null;
+  delete v._local;delete v._fund;delete v._patron;delete v.id;
+  S.locales[id]={base:E.base,accion,item:v};
+  const cambios=antes?Object.fromEntries(Object.entries(v).filter(([k,val])=>JSON.stringify(val??null)!==JSON.stringify(antes[k]??null))):null;
+  S.pend=S.pend.filter(p=>!(p.tipo==="ficha"&&p.id===id));
+  S.pend.push({tipo:"ficha",uid:uid(),creado:new Date().toISOString(),accion,base:E.base,id,url:antes?.url||null,titulo:v.titulo,
+    ficha:{...v,Ejercicios:undefined,"Físico":undefined,Fundamentos:undefined,Fuente:undefined},
+    relaciones:Object.fromEntries(["Fundamentos","Ejercicios","Físico","Fuente"].filter(k=>(v[k]||[]).length).map(k=>[k,v[k].map(i=>({id:i,titulo:titulo(i)}))])),
+    cambios:cambios?Object.keys(cambios):null,procedencia:E.proc||null,reglaDeFormato:!!E.regla});
+  S.edit=null;guardar();reindexar();toast("Guardado en este móvil. Mándalo a Notion desde Enviar");ir("/f/"+id);
+}
+
+// ---------- Enviar a Notion (por correo; lo aplica la Rutina de boxeo) ----------
+// base64 del JSON: el correo puede partir líneas largas y así no se rompe nada
+const b64=t=>{const b=new TextEncoder().encode(t);let s="";for(let i=0;i<b.length;i+=8192)s+=String.fromCharCode(...b.subarray(i,i+8192));return btoa(s)};
+function textoEnvio(){
+  const lin=S.pend.map(p=>p.tipo==="cierre"?`• Cierre: ${p.sesion.titulo} → ${p.estado} (${p.fecha})`:`• ${p.accion==="nuevo"?"Nuevo":"Cambio en"} ${p.base==="ejercicios"?"ejercicio":"bloque"}: ${p.titulo}`);
+  const datos={app:"esquina-entrenador",version:VERSION,enviado:new Date().toISOString(),envios:S.pend};
+  return {asunto:`[Esquina] Para Notion · ${hoyISO()} · ${S.pend.length} ${S.pend.length===1?"cambio":"cambios"}`,
+    cuerpo:`Envío de la Esquina del Entrenador para el Centro de Boxeo de Notion. Lo aplica la Rutina de boxeo (skill esquina-entrenador). No lo edites.\n\n${lin.join("\n")}\n\n-----ESQUINA-INICIO-----\n${b64(JSON.stringify(datos)).match(/.{1,76}/g).join("\n")}\n-----ESQUINA-FIN-----\n`};
+}
+function vEnviar(){
+  const n=S.pend.length;
+  const fila=p=>`<div class="card"><div class="meta"><span class="tag ${p.tipo==="cierre"?"r":"l"}">${p.tipo==="cierre"?"Cierre":p.accion==="nuevo"?"Nuevo":"Cambio"}</span><span>${esc(new Date(p.creado).toLocaleString("es-ES",{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"}))}</span></div>
+    <b>${esc(p.tipo==="cierre"?p.sesion.titulo:p.titulo)}</b>${p.tipo==="cierre"?`<span class="note">${esc(p.estado)} · ${esc(p.sensaciones||p.enSuLugar||"")}</span>`:""}
+    <div class="bar">${p.tipo==="cierre"?`<a class="btn sm" href="#/cerrar/${p.sesion.id}">Editar</a>`:`<a class="btn sm" href="#/f/${p.id}">Ver</a>`}<button class="btn sm dan" data-quitapend="${p.uid}">Quitar</button></div></div>`;
+  return `<h2 class="t">Enviar a Notion</h2>
+  <p class="note">Notion es la fuente de verdad. Lo que cierras o creas aquí se manda en un correo a ti mismo y la Rutina de boxeo lo pasa a Notion al día siguiente (los cierres a su Sesión, las fichas por el 📥 Inbox).</p>
+  ${!S.aj.correo?`<div class="err">Pon tu correo en <a href="#/ajustes">Ajustes</a> para poder enviar.</div>`:""}
+  ${n?`<div class="list">${S.pend.map(fila).join("")}</div>
+  <div class="bar" style="margin:14px 0"><button class="btn pri big" data-enviar="1"${S.aj.correo?"":" disabled"}>📧 Enviar ${n} por correo</button><button class="btn" data-copiar="1">Copiar</button></div>
+  ${S.esperando?`<div class="ok">¿Se envió el correo? <button class="btn sm pri" data-enviado="1">Sí, enviado</button> <button class="btn sm" data-noenviado="1">No</button></div>`:""}`:
+  `<div class="empty"><b>Nada pendiente</b>Cuando cierres una clase o guardes una ficha aparecerá aquí.</div>`}
+  ${S.enviados.length?`<h3 class="s">Enviados</h3><div class="list">${S.enviados.slice(-10).reverse().map(e=>`<div class="card"><span class="note">${esc(new Date(e.enviado).toLocaleString("es-ES",{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"}))} · ${e.envios.length} ${e.envios.length===1?"cambio":"cambios"}</span><span>${e.envios.map(p=>esc(p.tipo==="cierre"?p.sesion.titulo:p.titulo)).join(" · ")}</span></div>`).join("")}</div>`:""}`;
+}
+function enviar(){
+  const {asunto,cuerpo}=textoEnvio();
+  const url=`mailto:${encodeURIComponent(S.aj.correo)}?subject=${encodeURIComponent(asunto)}&body=${encodeURIComponent(cuerpo)}`;
+  if(url.length>60000){copiar();toast("Es muy largo para el enlace de correo: está copiado, pégalo en un correo a ti mismo con el asunto que empieza por [Esquina]",6000)}
+  else location.href=url;
+  S.esperando=true;setTimeout(render,600);
+}
+async function copiar(){const {asunto,cuerpo}=textoEnvio();try{await navigator.clipboard.writeText(asunto+"\n\n"+cuerpo);toast("Copiado")}catch(e){toast("No se pudo copiar")}}
+
+// ---------- Ajustes, importar y exportar ----------
+function vAjustes(){
+  const d=S.datos,n=d?BASES.map(b=>`${(d[b]||[]).length} ${b}`).join(" · "):"";
+  return `<h2 class="t">Ajustes</h2>
+  <section class="form"><b>Tus datos</b>
+    <p class="note">${d?`${d.ejemplos?"Ejemplos públicos":"Exportado de Notion el "+esc(new Date(d.exportado).toLocaleString("es-ES"))}<br>${esc(n)}`:"Sin datos todavía."}</p>
+    <p class="note">Todo se guarda solo en este móvil. Importa el archivo completo que te pasa Claude, o el de cambios que llega con el aviso de la Rutina los días de clase (se mezcla con lo que ya tienes).</p>
+    <div class="bar"><label class="btn pri">Importar archivo<input type="file" id="importar" accept=".json,application/json" hidden></label><button class="btn" data-ejemplos="1">Cargar ejemplos</button></div>
+    <div class="bar" style="margin-top:8px"><button class="btn" data-copia="1">Exportar copia de seguridad</button>${S.borrar?`<span>¿Borrar todo? <button class="btn sm dan" data-borrarsi="1">Sí</button> <button class="btn sm" data-borrarno="1">No</button></span>`:`<button class="btn dan" data-borrar="1">Borrar todo</button>`}</div>
+  </section>
+  <section class="form"><b>Envíos a Notion</b>
+    <label class="f">Tu correo (el que lee la Rutina)<input type="email" id="a-correo" value="${esc(S.aj.correo)}" placeholder="tu@correo.com"></label>
+    <button class="btn sm pri" data-guardaraj="1">Guardar</button></section>
+  <section class="form"><b>Modo clase</b>
+    <div class="bar" style="margin-top:6px"><button class="chip" data-aj="sonido" aria-pressed="${!!S.aj.sonido}">🔔 Campana</button><button class="chip" data-aj="vibrar" aria-pressed="${!!S.aj.vibrar}">📳 Vibración</button><button class="btn sm" data-probar="1">Probar sonido</button></div>
+    <p class="note">La pantalla se queda encendida durante la clase. Con la pantalla bloqueada, en Android la campana sigue sonando; en iPhone el sistema detiene el sonido, así que déjala encendida. Sube el volumen multimedia.</p></section>
+  <section class="form"><b>Instalar en el móvil</b>${promptInstalar?`<div class="bar"><button class="btn pri" data-instalar="1">Instalar la app</button></div>`:""}
+    <p class="note"><b>Android (Chrome):</b> menú ⋮ → «Instalar aplicación».<br><b>iPhone (Safari):</b> Compartir → «Añadir a pantalla de inicio».<br>Funciona sin cobertura en el gimnasio.</p></section>
+  <section class="form"><b>Versión ${VERSION} · novedades</b>${NOVEDADES.map(([v,f,l])=>`<div><b>${v}</b> <span class="note">· ${f}</span><ul>${l.map(x=>`<li>${esc(x)}</li>`).join("")}</ul></div>`).join("")}</section>
+  <section class="form"><b>Fuentes</b><p class="note">Cada ficha dice de dónde sale. Los ejemplos públicos citan el manual de USA Boxing (Grassroots Training Manual v.01, 2014) y «Musculación sin aparatos» de Mark Lauren, con descripción propia.</p>
+    ${lista("fuentes").map(f=>`<div><a class="int" href="#/f/${f.id}">${esc(f.titulo)}</a> <span class="note">· ${esc(f["Autor/Cuenta"]||"")}</span></div>`).join("")}</section>`;
+}
+function importar(txt){
+  let d;try{d=JSON.parse(txt)}catch(e){toast("Ese archivo no es de la Esquina");return}
+  if(d&&d.app==="esquina-entrenador"&&d.tipo==="copia"){S.datos=d.datos;S.locales=d.locales||{};S.pend=d.pend||[];S.timers=d.timers||{};LS.set("esq.datos",S.datos);guardar();reindexar();toast("Copia restaurada");render();return}
+  if(!d||d.app!=="esquina-entrenador"||!BASES.some(b=>Array.isArray(d[b]))){toast("Ese archivo no es de la Esquina");return}
+  if(d.parcial){
+    if(!S.datos||S.datos.ejemplos){toast("Primero importa el archivo completo; este solo trae los últimos cambios");return}
+    let n=0;for(const b of BASES){const m=new Map((S.datos[b]||[]).map(x=>[x.id,x]));for(const x of d[b]||[]){m.set(x.id,x);n++}S.datos[b]=[...m.values()]}
+    S.datos.exportado=d.exportado;
+  }else S.datos=d;
+  // Lo ya enviado a Notion antes de este export ya está allí: se quita la copia local
+  const envio=S.enviados.filter(e=>e.enviado<d.exportado).flatMap(e=>e.envios);
+  for(const p of envio)if(p.tipo==="ficha")delete S.locales[p.id];
+  if(!LS.set("esq.datos",S.datos)){toast("No cabe en este móvil");return}
+  guardar();reindexar();toast(d.parcial?"Cambios importados":"Datos importados");render();
+}
+async function cargarEjemplos(){try{const r=await fetch("ejemplos.json",{cache:"no-cache"});const d=await r.json();d.ejemplos=true;S.datos=d;LS.set("esq.datos",d);reindexar();toast("Ejemplos cargados");render()}catch(e){toast("No se pudieron cargar los ejemplos (¿sin conexión?)")}}
+function descargar(nombre,obj){const b=new Blob([JSON.stringify(obj)],{type:"application/json"});const u=URL.createObjectURL(b);const a=document.createElement("a");a.href=u;a.download=nombre;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),2000)}
+async function compartirArchivo(nombre,obj){try{const f=new File([JSON.stringify(obj)],nombre,{type:"application/json"});if(navigator.canShare&&navigator.canShare({files:[f]})){await navigator.share({files:[f],title:nombre});return}}catch(e){if(e&&e.name==="AbortError")return}descargar(nombre,obj)}
+let promptInstalar=null;
+window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();promptInstalar=e;if(ruta().v==="ajustes")render()});
+
+// ---------- Eventos ----------
+app.addEventListener("click",async ev=>{
+  const t=ev.target.closest("button,[data-clase]");if(!t)return;const d=t.dataset;
+  if(d.clase){const s=get(d.clase);abrirClase(pasosDeSesion(s),d.clase);return}
+  if(d.bloque){abrirClase([{id:d.bloque,fase:"Bloque suelto",min:null}],null);return}
+  if(d.libre){abrirClase([{id:null,fase:"Temporizador",prog:LS.get("esq.libre",{modo:"intervalos",rondas:3,trabajo:180,descanso:60,rol:0})}],null);return}
+  if(d.ejemplos){await cargarEjemplos();return}
+  if(d.fil){const b=S.fil._base,F=S.fil[b];const a=F[d.fil]||[];F[d.fil]=a.includes(d.val)?a.filter(x=>x!==d.val):[...a,d.val];guardar();render();return}
+  if(d.limpiar){S.fil[d.limpiar]={};guardar();render();return}
+  if(d.estado){document.querySelectorAll("[data-estado]").forEach(b=>b.setAttribute("aria-pressed",b===t));$("#c-lugarw").style.display=d.estado==="Saltada"?"":"none";return}
+  if(d.guardarcierre){guardarCierre(d.guardarcierre);return}
+  if(d.m){leerEditor();const v=S.edit.v,a=v[d.m]||[];v[d.m]=a.includes(d.val)?a.filter(x=>x!==d.val):[...a,d.val];t.setAttribute("aria-pressed",v[d.m].includes(d.val));return}
+  if(d.sugerir){leerEditor();const f=fundDesdeNotacion(S.edit.v["Notación"]||S.edit.v.titulo);if(!f.length){toast("No reconozco golpes ni defensas en la notación");return}S.edit.v["Fundamentos"]=[...new Set([...(S.edit.v["Fundamentos"]||[]),...f])];render();toast("Revisa la sugerencia: lo ambiguo no se marca");return}
+  if(d.anade){leerEditor();const k=baseDe(d.anade)==="fisico"?"Físico":"Ejercicios";S.edit.v[k]=[...(S.edit.v[k]||[]),d.anade];S.edit.qp="";render();return}
+  if(d.quita){leerEditor();for(const k of ["Ejercicios","Físico"])S.edit.v[k]=(S.edit.v[k]||[]).filter(x=>x!==d.quita);render();return}
+  if(d.sube){leerEditor();const v=S.edit.v,ps=[...(v["Ejercicios"]||[]),...(v["Físico"]||[])],i=+d.sube;if(i>0){[ps[i-1],ps[i]]=[ps[i],ps[i-1]];v["Ejercicios"]=ps.filter(p=>baseDe(p)!=="fisico");v["Físico"]=ps.filter(p=>baseDe(p)==="fisico")}render();return}
+  if(d.guardarficha){guardarFicha();return}
+  if(d.quitapend){const p=S.pend.find(p=>p.uid===d.quitapend);S.pend=S.pend.filter(p=>p.uid!==d.quitapend);if(p?.tipo==="ficha")delete S.locales[p.id];guardar();reindexar();render();return}
+  if(d.enviar){enviar();return}
+  if(d.copiar){copiar();return}
+  if(d.enviado){S.enviados.push({enviado:new Date().toISOString(),envios:S.pend});S.pend=[];S.esperando=false;guardar();render();toast("Hecho. La Rutina lo pasará a Notion");return}
+  if(d.noenviado){S.esperando=false;render();return}
+  if(d.guardaraj){S.aj.correo=$("#a-correo").value.trim();guardar();toast("Guardado");render();return}
+  if(d.aj){S.aj[d.aj]=!S.aj[d.aj];guardar();render();return}
+  if(d.probar){AU.init();const c=AU.ctx;if(c){AU.campana(c.currentTime+.05);AU.aviso(c.currentTime+1.4)}vibrar([300,120,300]);return}
+  if(d.copia){compartirArchivo("esquina-copia-"+hoyISO()+".json",{app:"esquina-entrenador",tipo:"copia",version:VERSION,datos:S.datos,locales:S.locales,pend:S.pend,timers:S.timers});return}
+  if(d.borrar){S.borrar=true;render();return}
+  if(d.borrarno){S.borrar=false;render();return}
+  if(d.borrarsi){for(const k of ["esq.datos","esq.locales","esq.pend","esq.enviados","esq.timers","esq.filtros"])try{localStorage.removeItem(k)}catch(e){}
+    Object.assign(S,{datos:null,locales:{},pend:[],enviados:[],timers:{},fil:{},borrar:false});reindexar();render();return}
+  if(d.instalar&&promptInstalar){promptInstalar.prompt();promptInstalar=null;render();return}
+});
+app.addEventListener("input",ev=>{
+  if(ev.target.id==="q"){S.fil["q_"+S.fil._base]=ev.target.value;clearTimeout(S.qt);S.qt=setTimeout(()=>{const pos=ev.target.selectionStart;render();const q=$("#q");if(q){q.focus();try{q.setSelectionRange(pos,pos)}catch(e){}}},250)}
+  if(ev.target.id==="e-buscap"){S.edit.qp=ev.target.value;$("#e-pick").innerHTML=pickPiezas(S.edit)}
+});
+app.addEventListener("change",async ev=>{if(ev.target.id==="importar"&&ev.target.files[0]){importar(await ev.target.files[0].text());ev.target.value=""}});
+window.addEventListener("hashchange",()=>{const r=ruta();if(r.v!=="nuevo"&&r.v!=="editar")S.edit=null});
+
+// ---------- Arranque ----------
+(async()=>{
+  if(S.aj.tema)document.documentElement.dataset.theme=S.aj.tema;
+  cargarDatos();
+  if(!S.datos&&!LS.get("esq.iniciada",false)){LS.set("esq.iniciada",true);await cargarEjemplos()}
+  render();
+  if("serviceWorker" in navigator)navigator.serviceWorker.register("sw.js").catch(()=>{});
+  const vista=LS.get("esq.version",null);
+  if(vista!==VERSION){LS.set("esq.version",VERSION);if(vista)setTimeout(()=>toast("Novedades de la versión "+VERSION+": "+NOVEDADES[0][2][0],5000),800)}
+})();
+</script>
+</body></html>

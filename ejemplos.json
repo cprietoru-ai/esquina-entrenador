@@ -1,0 +1,818 @@
+{
+"app": "esquina-entrenador",
+"formato": 1,
+"exportado": "2026-10-18T21:47:00+00:00",
+"origen": "Ejemplos públicos (fichas con fuente registrada)",
+"fuentes": [
+{
+"id": "3e75a7523f27810fb9cbf989eb3fa150",
+"titulo": "USA Boxing — Grassroots Training Manual v.01",
+"Tipo": "Manual oficial",
+"Autor/Cuenta": "USA Boxing (federación nacional de EE.UU.)",
+"Enlace": "https://d36m266ykvepgv.cloudfront.net/uploads/media/lYivrDbNV6/o/usab-gtf-trainingmanual-v-01-1.pdf",
+"Confianza": "Alta"
+},
+{
+"id": "3e75a7523f278146b6c1d7ff783dd2f8",
+"titulo": "Musculación sin aparatos",
+"Tipo": "Libro",
+"Autor/Cuenta": "Mark Lauren",
+"Enlace": null,
+"Confianza": "Alta"
+}
+],
+"fundamentos": [
+{
+"id": "39a5a7523f278104b518f403fa859d35",
+"editado": "2026-07-11T22:42:00.000Z",
+"Errores comunes": "Bloquear solo con la mano dejando el cuerpo expuesto.",
+"Ejecución": "Mantén codos pegados al cuerpo y manos altas, tensa en el momento del impacto.",
+"Categoría": "Defensa",
+"Descripción": "Absorber el golpe con los antebrazos/guantes en guardia alta, sin desplazamiento.",
+"titulo": "Bloqueo"
+},
+{
+"id": "39a5a7523f27810bbbffd621d5e2533e",
+"editado": "2026-07-11T22:42:00.000Z",
+"Errores comunes": "Dar el paso demasiado grande y perder el equilibrio.",
+"Ejecución": "Da un paso corto en diagonal manteniendo la guardia, sin cruzar los pies.",
+"Categoría": "Movimiento",
+"Descripción": "Desplazamiento en ángulo (diagonal) para salir de la línea de ataque del rival y ganar posición lateral.",
+"titulo": "Pasos en V"
+},
+{
+"id": "39a5a7523f278113a09ece7d7550b831",
+"editado": "2026-07-11T22:42:00.000Z",
+"Errores comunes": "Quedarte \"atascado\" en la guardia cambiada sin salida clara si no la dominas.",
+"Ejecución": "Pivota pies y manos a la vez, mantén el equilibrio durante el cambio.",
+"Categoría": "Guardia",
+"Descripción": "Alternar momentáneamente entre guardia ortodoxa y zurda (o viceversa) para desorientar o buscar un ángulo nuevo.",
+"titulo": "Cambio de guardia"
+},
+{
+"id": "39a5a7523f27811c8d78cb750d2e413e",
+"editado": "2026-07-11T22:42:00.000Z",
+"Errores comunes": "Lanzarlo desde muy lejos (se ve venir). Levantar el codo en vez de mantenerlo pegado.",
+"Ejecución": "Flexiona ligeramente las rodillas, el golpe sale de abajo hacia arriba con la rotación de cadera, codo cerca del cuerpo.",
+"Categoría": "Golpe",
+"Descripción": "Golpe ascendente con la mano delantera. Ideal a corta distancia y contra guardia cerrada.",
+"titulo": "Uppercut izquierdo (5)"
+},
+{
+"id": "39a5a7523f27814682abda8de38a04e5",
+"editado": "2026-07-11T22:42:00.000Z",
+"Errores comunes": "Los mismos que el crochet izquierdo: ancho y sin rotación de cadera.",
+"Ejecución": "Igual que el crochet izquierdo, invertido.",
+"Categoría": "Golpe",
+"Descripción": "Golpe circular con la mano atrasada. Mismo principio que el crochet izquierdo, desde el lado dominante.",
+"titulo": "Crochet derecho (4)"
+},
+{
+"id": "39a5a7523f278146b905f38bb7e574b5",
+"editado": "2026-07-11T22:42:00.000Z",
+"Errores comunes": "Pivotar sin comprometer el peso (te quedas a medio camino, sin ángulo real).",
+"Ejecución": "Gira sobre la base del pie de apoyo, mantén la guardia durante el giro.",
+"Categoría": "Movimiento",
+"Descripción": "Giro sobre la bola del pie delantero (o trasero) para cambiar el ángulo respecto al rival sin desplazarse mucho.",
+"titulo": "Pivote"
+},
+{
+"id": "39a5a7523f27814f8d83cd7efb01bfd7",
+"editado": "2026-07-11T22:42:00.000Z",
+"Errores comunes": "Bajar la mano trasera al lanzarlo. \"Avisar\" el golpe echando el hombro atrás antes de tirarlo.",
+"Ejecución": "Extiende el brazo en línea recta desde la guardia, rota ligeramente el puño al impactar, la otra mano protege la barbilla, retira rápido a guardia.",
+"Categoría": "Golpe",
+"Descripción": "Golpe recto con la mano delantera. El más rápido; sirve para medir distancia, preparar combinaciones y mantener el ritmo.",
+"titulo": "Jab (1)"
+},
+{
+"id": "39a5a7523f27818f8740fb5ffb2a0399",
+"editado": "2026-07-11T22:42:00.000Z",
+"Errores comunes": "Golpear solo con el brazo sin rotar la cadera. Perder el equilibrio al lanzarlo.",
+"Ejecución": "Pivota sobre la bola del pie trasero, gira cadera y hombros, extiende el brazo en línea recta, la mano delantera vuelve a guardia.",
+"Categoría": "Golpe",
+"Descripción": "Golpe recto con la mano atrasada. El más potente de los rectos; usa la rotación de cadera y el pivote del pie trasero.",
+"titulo": "Cross / Directo (2)"
+},
+{
+"id": "39a5a7523f278191a474ee6c6c33b47e",
+"editado": "2026-07-11T22:42:00.000Z",
+"Errores comunes": "Guardia baja o abierta. Peso mal repartido entre los pies.",
+"Ejecución": "Mano delantera a la altura del pómulo, mano trasera pegada a la mejilla, barbilla baja, codos protegiendo el cuerpo, pies a la anchura de hombros con el talón trasero ligeramente levantado.",
+"Categoría": "Guardia",
+"Descripción": "Posición base de manos, pies y cuerpo desde la que se ataca y defiende.",
+"titulo": "Guardia básica"
+},
+{
+"id": "39a5a7523f2781c090f8c2f4c21af22f",
+"editado": "2026-07-11T22:42:00.000Z",
+"Errores comunes": "Lanzarlo demasiado ancho (pierde velocidad y avisa). No rotar la cadera.",
+"Ejecución": "Gira el codo a la altura del hombro, rota el pie y la cadera del mismo lado; el golpe describe un arco corto.",
+"Categoría": "Golpe",
+"Descripción": "Golpe circular con la mano delantera que ataca por el lateral de la guardia.",
+"titulo": "Crochet izquierdo (3)"
+},
+{
+"id": "39a5a7523f2781c1a4bff830865ea83e",
+"editado": "2026-07-11T22:42:00.000Z",
+"Errores comunes": "Usarla siempre igual sin variar la profundidad según el golpe que llega.",
+"Ejecución": "Igual que la esquiva completa pero con menor recorrido y mayor rapidez de vuelta al centro.",
+"Categoría": "Defensa",
+"Descripción": "Versión parcial del slip: un desplazamiento más corto que mantiene mejor la capacidad de respuesta inmediata.",
+"titulo": "Media esquiva"
+},
+{
+"id": "39a5a7523f2781c2aaf6eb0436d3cfd1",
+"editado": "2026-07-11T22:42:00.000Z",
+"Errores comunes": "Palmear tarde o con demasiada fuerza (te desequilibra a ti mismo).",
+"Ejecución": "Un toque corto y controlado con la palma sobre el guante/antebrazo del rival, sin perseguir la mano.",
+"Vídeo": "https://www.instagram.com/p/DaieFCZMIYQ/",
+"Categoría": "Defensa",
+"Descripción": "Desviar un golpe recto con la palma de la mano, redirigiéndolo fuera de su trayectoria.",
+"titulo": "Palmeo / Parry"
+},
+{
+"id": "39a5a7523f2781cc9e5ed1d3c32a3ce7",
+"editado": "2026-07-11T22:42:00.000Z",
+"Errores comunes": "Saltar demasiado alto (pierde estabilidad). Quedarse estático.",
+"Ejecución": "Peso repartido, pequeños rebotes sin cruzar los pies, rodillas semiflexionadas.",
+"Categoría": "Movimiento",
+"Descripción": "Desplazamiento base de boxeo: un rebote ligero entre los pies que mantiene el equilibrio y la movilidad constante.",
+"titulo": "Paso péndulo"
+},
+{
+"id": "39a5a7523f2781cfad04cd1a98221673",
+"editado": "2026-07-11T22:42:00.000Z",
+"Errores comunes": "Rotar sin flexionar (no baja lo suficiente). Perder el equilibrio al final del giro.",
+"Ejecución": "Flexiona rodillas y rota el torso describiendo un arco bajo, sincronizado con el golpe del rival.",
+"Vídeo": "https://www.instagram.com/p/DaieFCZMIYQ/",
+"Categoría": "Defensa",
+"Descripción": "Movimiento circular de la parte superior del cuerpo por debajo de un golpe circular (crochet/gancho), terminando en posición de salida o contraataque.",
+"titulo": "Esquiva rotatoria / Roll"
+},
+{
+"id": "39a5a7523f2781e7a321f4472978bdbb",
+"editado": "2026-07-11T22:42:00.000Z",
+"Errores comunes": "Mover solo la cabeza sin flexionar (queda corta). Esquivar hacia atrás en vez de hacia el lado.",
+"Ejecución": "Flexiona rodillas y desplaza el torso lateralmente, manteniendo la guardia arriba durante el movimiento.",
+"Vídeo": "https://www.instagram.com/p/DaieFCZMIYQ/",
+"Categoría": "Defensa",
+"Descripción": "Mover la cabeza fuera de la línea del golpe sin retirar los pies del sitio.",
+"titulo": "Esquiva / Slip"
+},
+{
+"id": "39a5a7523f2781eabfc3e7789339b8bd",
+"editado": "2026-07-11T22:42:00.000Z",
+"Errores comunes": "Echarse demasiado atrás (pierde capacidad de respuesta). Usarla como único recurso defensivo.",
+"Ejecución": "Carga el peso en la pierna trasera, inclina el tronco manteniendo el equilibrio, vuelve rápido al centro para responder.",
+"Vídeo": "https://www.instagram.com/p/DaieFCZMIYQ/",
+"Categoría": "Defensa",
+"Descripción": "Desplazar el peso y el tronco hacia atrás para que el golpe del rival se quede corto, sin mover los pies.",
+"titulo": "Ballesta / Pull"
+},
+{
+"id": "39a5a7523f2781f7b3adc05d7526f5f1",
+"editado": "2026-07-11T22:42:00.000Z",
+"Errores comunes": "Los mismos: distancia excesiva y codo elevado.",
+"Ejecución": "Igual que el uppercut izquierdo, invertido.",
+"Categoría": "Golpe",
+"Descripción": "Golpe ascendente con la mano atrasada. Mismo principio que el uppercut izquierdo.",
+"titulo": "Uppercut derecho (6)"
+},
+{
+"id": "39a5a7523f2781f9b8f6f8085977b0d2",
+"editado": "2026-07-11T22:42:00.000Z",
+"Errores comunes": "Retroceder demasiado (pierde distancia de golpeo). Hacerlo siempre en línea recta (previsible).",
+"Ejecución": "Retira el pie trasero primero, mantén la guardia, no retrocedas en línea recta de forma repetida.",
+"Categoría": "Movimiento",
+"Descripción": "Retirada corta para salir del alcance del rival; recurso de seguridad tras atacar o antes de contraatacar.",
+"titulo": "Paso atrás"
+}
+],
+"ejercicios": [
+{
+"id": "39b5a7523f278155986accf485c06a58",
+"editado": "2026-09-26T15:07:00.000Z",
+"Notación": "Cerrar distancia + ganchos/uppers",
+"Distancia": "Corta",
+"Intención": [
+"Entrada",
+"Contra"
+],
+"Nº golpes": 0,
+"Fuente": [
+"3e75a7523f27810fb9cbf989eb3fa150"
+],
+"Tipo": "Contraataque",
+"Se trabaja en": [
+"Pareja",
+"Sparring"
+],
+"Nivel": "Avanzado",
+"Zona": "Mixto",
+"Grupo": "Contraataques",
+"titulo": "Táctica: contra el rival alto",
+"cuerpo": "> 🎯 **Para qué sirve — **ajuste táctico (no una combinación fija) para pelear contra un rival con mayor alcance: en vez de intercambiar a su distancia favorita, cierras el espacio y trabajas desde dentro.\n## Secuencia\n1. Muévete lateralmente hacia ambos lados; no camines en línea recta hacia él (te deja expuesto a su alcance mayor)\n1. Atrae su directo (deja que lo lance) y usa ese instante para entrar a distancia corta\n1. Una vez dentro, cambia el repertorio: ganchos y uppers a cabeza y cuerpo funcionan mejor que rectos a esta distancia\n## Puntos clave\n- El objetivo no es evitar el intercambio, es elegir en qué distancia ocurre\n- Entrar justo tras su directo es el momento en que su guardia está más abierta\n## Errores comunes\n- Quedarte a media distancia (ni fuera de su alcance ni dentro del tuyo) — es la peor zona posible contra un rival alto\n## Cómo entrenarla\n- [ ] Pareja: uno simula ser \"el alto\", el otro practica el patrón de entrada\n- [ ] Sparring técnico aplicando el patrón contra alguien de más alcance\n\n*Fuente: USA Boxing, Grassroots Training Manual v.01 (2014), adaptado y resumido en español.*"
+},
+{
+"id": "39b5a7523f2781aaaaf5de3112f9f77e",
+"editado": "2026-09-26T15:07:00.000Z",
+"Notación": "Bajar centro + weave + atacar al cuerpo",
+"Distancia": "Corta",
+"Intención": [
+"Contra",
+"Entrada"
+],
+"Nº golpes": 0,
+"Fuente": [
+"3e75a7523f27810fb9cbf989eb3fa150"
+],
+"Tipo": "Contraataque",
+"Se trabaja en": [
+"Pareja",
+"Sparring"
+],
+"Nivel": "Avanzado",
+"Zona": "Cuerpo",
+"Grupo": "Contraataques",
+"titulo": "Táctica: contra el que abusa del jab",
+"cuerpo": "> 🎯 **Para qué sirve — **contra un rival que insiste en el jab/directo de forma repetitiva, pasar por debajo de su línea de tiro y castigar el cuerpo.\n## Secuencia\n1. Baja el centro de gravedad (flexiona rodillas, no la espalda)\n1. Muévete por debajo de la línea de su directo mientras avanzas\n1. Weave (culebreo) hacia ambos lados para no ser predecible en la entrada\n1. Una vez dentro, ataca al cuerpo con distintos golpes\n## Puntos clave\n- Este patrón depende de que el rival sea repetitivo con el mismo golpe — identifica el patrón antes de aplicarlo\n- El weave debe ser continuo durante el avance, no un movimiento único\n## Errores comunes\n- Entrar recto por el centro en vez de por debajo de la línea del jab\n## Cómo entrenarla\n- [ ] Pareja: uno jabbea repetidamente, el otro practica el weave de entrada\n- [ ] Sparring técnico con foco en entradas al cuerpo\n\n*Fuente: USA Boxing, Grassroots Training Manual v.01 (2014), adaptado y resumido en español.*"
+},
+{
+"id": "39b5a7523f2781b1b6f3caeddb60d965",
+"editado": "2026-09-26T15:08:00.000Z",
+"Notación": "Circular al lado ciego + pie delantero fuera",
+"Distancia": "Media",
+"Intención": [
+"Entrada",
+"Defensa"
+],
+"Nº golpes": 0,
+"Fuente": [
+"3e75a7523f27810fb9cbf989eb3fa150"
+],
+"Tipo": "Contraataque",
+"Se trabaja en": [
+"Pareja",
+"Sparring"
+],
+"Nivel": "Avanzado",
+"Zona": "Mixto",
+"Grupo": "Contraataques",
+"titulo": "Táctica: contra el zurdo (guardia opuesta)",
+"cuerpo": "> 🎯 **Para qué sirve — **contra un rival en guardia opuesta (zurdo si eres diestro, o viceversa), donde las líneas de ataque normales cambian.\n## Secuencia\n1. Fuerza a que sea él quien inicie el intercambio\n1. Circula hacia su lado ciego (el lado contrario a su mano dominante), alejándote de su golpe más peligroso\n1. Coloca siempre tu pie delantero fuera del suyo — facilita esquivar su ataque principal\n1. Usa la mano trasera para proteger cabeza y tronco (la línea de ataque directa cambia respecto a un rival ortodoxo)\n1. Golpea a menudo con la mano delantera; considera dobles golpes con la mano trasera al atacar\n## Puntos clave\n- El posicionamiento de pies (fuera del suyo) es el fundamento de toda la táctica — sin eso, el resto no funciona\n## Errores comunes\n- Pelear como si fuera un rival ortodoxo (las líneas de golpeo están invertidas)\n## Cómo entrenarla\n- [ ] Pareja: uno en guardia zurda, practicar el posicionamiento de pies antes que nada\n- [ ] Sparring técnico contra guardia opuesta\n\n*Fuente: USA Boxing, Grassroots Training Manual v.01 (2014), adaptado y resumido en español.*"
+},
+{
+"id": "39b5a7523f2781b991abc8899e8b811a",
+"editado": "2026-09-26T15:08:00.000Z",
+"Notación": "Movimiento constante + ataque sorpresa + salida",
+"Distancia": "Larga",
+"Intención": [
+"Salida",
+"Defensa"
+],
+"Nº golpes": 0,
+"Fuente": [
+"3e75a7523f27810fb9cbf989eb3fa150"
+],
+"Tipo": "Contraataque",
+"Se trabaja en": [
+"Pareja",
+"Sparring"
+],
+"Nivel": "Avanzado",
+"Zona": "Mixto",
+"Grupo": "Contraataques",
+"titulo": "Táctica: contra el pegador fuerte",
+"cuerpo": "> 🎯 **Para qué sirve — **contra un rival con mucha potencia, evitar que se asiente para golpear y minimizar el intercambio directo.\n## Secuencia\n1. Movimiento constante de pies; no le dejes tiempo para plantarse y cargar el golpe\n1. Ataques cortos y de salida rápida (\"hit and move\"), nunca quedarte a intercambiar\n1. Si conectas, sal inmediatamente sin esperar respuesta\n1. Usa todo el espacio del ring, no solo lateral\n## Puntos clave\n- El objetivo no es superar su potencia golpe a golpe, es no dejarle usarla\n- La disciplina de salida es más importante que la velocidad de entrada\n## Errores comunes\n- Intercambiar golpe por golpe para \"demostrar\" que aguantas — es exactamente lo que un pegador fuerte quiere\n## Cómo entrenarla\n- [ ] Pareja: practicar el patrón entrada-golpe-salida sin quedarte parado\n- [ ] Sparring técnico con reglas de \"toca y sal\"\n\n*Fuente: USA Boxing, Grassroots Training Manual v.01 (2014), adaptado y resumido en español.*"
+},
+{
+"id": "39b5a7523f2781d2b843d205f5a065b2",
+"editado": "2026-09-26T15:08:00.000Z",
+"Notación": "Contraataque + desplazamiento lateral de salida",
+"Distancia": "Corta",
+"Intención": [
+"Salida",
+"Contra"
+],
+"Nº golpes": 0,
+"Fuente": [
+"3e75a7523f27810fb9cbf989eb3fa150"
+],
+"Tipo": "Contraataque",
+"Se trabaja en": [
+"Pareja",
+"Sparring"
+],
+"Nivel": "Avanzado",
+"Zona": "Mixto",
+"Grupo": "Contraataques",
+"titulo": "Táctica: salida de cuerdas/rincón",
+"cuerpo": "> 🎯 **Para qué sirve — **recurso de seguridad para cuando quedas atrapado contra las cuerdas o en la esquina, una de las posiciones más peligrosas del combate.\n## Secuencia\n1. Usa el espacio del ring activamente para no quedar atrapado en primer lugar\n1. Si ya estás atrapado: ataque dinámico buscando cambiar de posición con el rival (invertir quién queda contra las cuerdas)\n1. Contraataca con una combinación mientras te desplazas lateralmente hacia un lado\n1. Usa amagos para atraer al rival hacia ti un instante, y aprovecha ese hueco para salir rápido\n## Puntos clave\n- La salida real ocurre durante el contraataque, no después — combinación y desplazamiento van juntos\n- Prevenir (no quedar atrapado) es mejor que tener que salir después\n## Errores comunes\n- Intentar salir en línea recta hacia delante (el rival te corta el paso fácilmente)\n## Cómo entrenarla\n- [ ] Pareja: uno acorrala contra una pared/cuerda imaginaria, el otro practica la salida\n- [ ] Sparring técnico partiendo desde posición acorralada\n\n*Fuente: USA Boxing, Grassroots Training Manual v.01 (2014), adaptado y resumido en español.*"
+},
+{
+"id": "39b5a7523f2781f1be0fd6661a7fb56e",
+"editado": "2026-09-26T15:09:00.000Z",
+"Notación": "Engaño + re-contraataque",
+"Distancia": "Media",
+"Intención": [
+"Engaño",
+"Contra"
+],
+"Nº golpes": 0,
+"Fuente": [
+"3e75a7523f27810fb9cbf989eb3fa150"
+],
+"Tipo": "Contraataque",
+"Se trabaja en": [
+"Pareja",
+"Sparring"
+],
+"Nivel": "Avanzado",
+"Zona": "Mixto",
+"Grupo": "Contraataques",
+"titulo": "Táctica: contra el contragolpeador",
+"cuerpo": "> 🎯 **Para qué sirve — **contra un rival que también espera para contraatacar: romper el punto muerto y forzarle a moverse primero.\n## Secuencia\n1. Usa amagos/fintas para hacerle salir primero (nadie ataca, gana el que fuerza al otro a moverse)\n1. Cuando él lanza su contra, tu respondes con un re-contraataque — el segundo nivel de la lectura\n1. Alternativa: imponer presión ofensiva constante, para que no tenga el espacio/tiempo que necesita para contragolpear\n## Puntos clave\n- Es el duelo táctico más exigente: contra un contragolpeador, tu también necesitas leer tiempos, no solo golpear\n- Elegir entre \"forzar con finta\" o \"presionar sin parar\" depende del rival concreto\n## Errores comunes\n- Esperar pasivamente igual que él — si ambos esperan, no pasa nada; alguien tiene que iniciar el patrón\n## Cómo entrenarla\n- [ ] Pareja: ambos en guardia de espera, uno practica la finta de apertura\n- [ ] Sparring técnico contra otro contragolpeador\n\n*Fuente: USA Boxing, Grassroots Training Manual v.01 (2014), adaptado y resumido en español.*"
+},
+{
+"id": "39b5a7523f2781f69791ccf6c6a08e7f",
+"editado": "2026-09-26T15:09:00.000Z",
+"Notación": "Pasos laterales + rectos y uppers",
+"Distancia": "Larga",
+"Intención": [
+"Contra",
+"Salida"
+],
+"Nº golpes": 0,
+"Fuente": [
+"3e75a7523f27810fb9cbf989eb3fa150"
+],
+"Tipo": "Contraataque",
+"Se trabaja en": [
+"Pareja",
+"Sparring"
+],
+"Nivel": "Avanzado",
+"Zona": "Mixto",
+"Grupo": "Contraataques",
+"titulo": "Táctica: contra el rival bajo/corto",
+"cuerpo": "> 🎯 **Para qué sirve — **contra un rival más bajo/corto que busca entrar a distancia corta, mantener el combate en tu distancia larga favorable.\n## Secuencia\n1. No retrocedas en línea recta (es fácil de perseguir); usa pasos laterales\n1. Prioriza rectos y uppers, que funcionan mejor a distancia larga\n1. Cuando él intente entrar, da un paso atrás justo a tiempo y responde con el contraataque\n1. Mantén el ritmo de piernas alto: la clave es la velocidad de pies, no la potencia\n## Puntos clave\n- Si tu golpe conecta, encadena otro inmediatamente (no dejes que se recupere)\n- Si tu golpe falla y él ya está encima, el clinch es una salida válida, no una derrota táctica\n## Errores comunes\n- Retroceder siempre en la misma línea recta — se vuelve previsible y te acorrala contra las cuerdas\n## Cómo entrenarla\n- [ ] Pareja: el compañero presiona buscando distancia corta, tu trabajas la salida lateral + contra\n- [ ] Sparring técnico contra alguien con menor alcance\n\n*Fuente: USA Boxing, Grassroots Training Manual v.01 (2014), adaptado y resumido en español.*"
+}
+],
+"fisico": [
+{
+"id": "39b5a7523f278139910fe80a070c9cc4",
+"editado": "2026-09-26T14:06:00.000Z",
+"Nivel": "Básico",
+"Series/Reps o Duración": "3 series × 8-12 reps",
+"Material": [
+"Ninguno"
+],
+"Patrón de movimiento": [
+"Empuje vertical"
+],
+"Categoría": "Fuerza",
+"Grupo muscular": [
+"Tren superior"
+],
+"Descripción": "Empuje vertical enfocado en tríceps y pecho, usando una silla o banco estable como apoyo.",
+"Fuente": [
+"3e75a7523f278146b6c1d7ff783dd2f8"
+],
+"Zona muscular específica": [
+"Tríceps",
+"Pecho"
+],
+"titulo": "Fondos (en silla o banco)",
+"Notas": "Selección inspirada en \"Musculación sin aparatos\" (Mark Lauren) — descripción y ejecución propias.",
+"cuerpo": "## Ejecución\nManos apoyadas en el borde de una silla/banco estable, piernas extendidas o flexionadas. Baja flexionando los codos hasta ~90º, empuja de vuelta arriba.\n## Errores comunes\nBajar demasiado (fuerza el hombro). Encoger el cuello en vez de mantenerlo relajado.\n\n*Selección inspirada en «Musculación sin aparatos» (Mark Lauren); descripción y ejecución propias.*"
+},
+{
+"id": "39b5a7523f27814a84e0e354bed59c4e",
+"editado": "2026-09-26T14:06:00.000Z",
+"Nivel": "Básico",
+"Series/Reps o Duración": "3-4 series × 15-20 reps",
+"Material": [
+"Ninguno"
+],
+"Patrón de movimiento": [
+"Sentadilla"
+],
+"Categoría": "Fuerza",
+"Grupo muscular": [
+"Piernas"
+],
+"Descripción": "El ejercicio base de piernas: cuádriceps, glúteo, isquios.",
+"Fuente": [
+"3e75a7523f278146b6c1d7ff783dd2f8"
+],
+"Zona muscular específica": [
+"Cuádriceps",
+"Glúteo"
+],
+"titulo": "Sentadillas",
+"Notas": "Selección inspirada en \"Musculación sin aparatos\" (Mark Lauren) — descripción y ejecución propias.",
+"cuerpo": "## Ejecución\nPies a la anchura de hombros, empuja la cadera hacia atrás y abajo, rodillas siguiendo la línea de los pies, baja hasta muslos paralelos al suelo o más.\n## Errores comunes\nRodillas colapsando hacia dentro. Talones que se levantan del suelo.\n\n*Selección inspirada en «Musculación sin aparatos» (Mark Lauren); descripción y ejecución propias.*"
+},
+{
+"id": "39b5a7523f27815db213f51ac3ace443",
+"editado": "2026-09-26T14:06:00.000Z",
+"Nivel": "Básico",
+"Series/Reps o Duración": "3 series × 10-15 reps",
+"Material": [
+"Ninguno"
+],
+"Patrón de movimiento": [
+"Core/Anti-rotación"
+],
+"Categoría": "Core",
+"Grupo muscular": [
+"Core"
+],
+"Descripción": "Trabajo de abdomen bajo, tumbado boca arriba.",
+"Fuente": [
+"3e75a7523f278146b6c1d7ff783dd2f8"
+],
+"Zona muscular específica": [
+"Core"
+],
+"titulo": "Elevaciones de piernas",
+"Notas": "Selección inspirada en \"Musculación sin aparatos\" (Mark Lauren) — descripción y ejecución propias.",
+"cuerpo": "## Ejecución\nTumbado boca arriba, piernas extendidas, sube controlado sin despegar la zona lumbar del suelo.\n## Errores comunes\nArquear la espalda baja al subir/bajar las piernas (compensa con lumbares en vez de abdomen).\n\n*Selección inspirada en «Musculación sin aparatos» (Mark Lauren); descripción y ejecución propias.*"
+},
+{
+"id": "39b5a7523f27816b8e3afca6ca32de7e",
+"editado": "2026-09-26T15:15:00.000Z",
+"Nivel": "Avanzado",
+"Series/Reps o Duración": "3 series × 5-8 por pierna (según progresión)",
+"Material": [
+"Ninguno"
+],
+"Patrón de movimiento": [
+"Sentadilla"
+],
+"Categoría": "Fuerza",
+"Grupo muscular": [
+"Piernas"
+],
+"Descripción": "Ejercicio unilateral avanzado. El trabajo a una sola pierna evita el \"déficit bilateral\" (menor activación neuromuscular cuando se trabajan las dos piernas a la vez) y corrige desequilibrios entre lados. El equilibrio y fuerza unilateral se transfiere directamente a la estabilidad en guardia y a los cambios de peso al golpear.",
+"Fuente": [
+"3e75a7523f278146b6c1d7ff783dd2f8"
+],
+"Zona muscular específica": [
+"Cuádriceps",
+"Glúteo"
+],
+"titulo": "Sentadilla a una pierna (progresión)",
+"Notas": "Selección inspirada en \"Musculación sin aparatos\" (Mark Lauren) — descripción y ejecución propias.",
+"cuerpo": "## Ejecución\nApoyo en una pierna, la otra extendida al frente, baja controlado. Empieza con apoyo (silla, pared, o solo bajando poco) y ve profundizando el rango con el tiempo.\n## Errores comunes\nQuerer hacer la versión completa (\"pistol\") sin pasar por la progresión — alto riesgo de compensar con mala técnica.\n\n*Selección inspirada en «Musculación sin aparatos» (Mark Lauren); descripción y ejecución propias.*"
+},
+{
+"id": "39b5a7523f278196a97fc11a0a616cac",
+"editado": "2026-09-26T15:15:00.000Z",
+"Nivel": "Intermedio",
+"Series/Reps o Duración": "3-4 series × al fallo (o negativas si aún no salen completas)",
+"Material": [
+"Ninguno"
+],
+"Patrón de movimiento": [
+"Tracción vertical"
+],
+"Categoría": "Fuerza",
+"Grupo muscular": [
+"Tren superior"
+],
+"Descripción": "Tirón vertical: espalda ancha, bíceps y agarre.",
+"Fuente": [
+"3e75a7523f278146b6c1d7ff783dd2f8"
+],
+"Zona muscular específica": [
+"Espalda",
+"Bíceps"
+],
+"titulo": "Dominadas",
+"Notas": "Progresión: Si aún no sale la dominada completa: solo la fase negativa (subir con ayuda, bajar muy despacio, 4-5\"). Selección inspirada en \"Musculación sin aparatos\" (Mark Lauren) — descripción y ejecución propias.",
+"cuerpo": "## Ejecución\nAgarre prono a la anchura de hombros, tira hasta que la barbilla supere la barra, baja controlado sin soltarte de golpe.\n## Errores comunes\nUsar impulso/balanceo de piernas. No completar el recorrido (dominadas \"parciales\").\n\n*Selección inspirada en «Musculación sin aparatos» (Mark Lauren); descripción y ejecución propias.*"
+},
+{
+"id": "39b5a7523f2781989181d2a744b32974",
+"editado": "2026-09-26T14:06:00.000Z",
+"Nivel": "Intermedio",
+"Series/Reps o Duración": "3-4 series × 10-15 reps, o por tiempo (30-45\")",
+"Material": [
+"Ninguno"
+],
+"Patrón de movimiento": [
+"Sentadilla",
+"Empuje horizontal",
+"Locomoción/Pliometría"
+],
+"Categoría": "Potencia",
+"Grupo muscular": [
+"Cuerpo completo"
+],
+"Descripción": "Movimiento compuesto de cuerpo completo: fuerza, potencia y cardio en un solo gesto.",
+"Fuente": [
+"3e75a7523f278146b6c1d7ff783dd2f8"
+],
+"Zona muscular específica": [
+"Cuerpo completo"
+],
+"titulo": "Burpees",
+"Notas": "Selección inspirada en \"Musculación sin aparatos\" (Mark Lauren) — descripción y ejecución propias.",
+"cuerpo": "## Ejecución\nDe pie → baja a sentadilla con manos al suelo → salta los pies atrás a posición de plancha → (opcional: flexión) → salta los pies de vuelta adelante → salto vertical con brazos arriba.\n## Errores comunes\nPerder la posición de plancha (cadera hundida) al saltar los pies atrás, sobre todo cuando llega la fatiga.\n\n*Selección inspirada en «Musculación sin aparatos» (Mark Lauren); descripción y ejecución propias.*"
+},
+{
+"id": "39b5a7523f2781a5bb2fc8b5788fcd3f",
+"editado": "2026-09-26T14:06:00.000Z",
+"Nivel": "Básico",
+"Series/Reps o Duración": "3-4 series × 30-60\"",
+"Material": [
+"Ninguno"
+],
+"Patrón de movimiento": [
+"Core/Anti-rotación"
+],
+"Categoría": "Core",
+"Grupo muscular": [
+"Core"
+],
+"Descripción": "Isométrico de core: estabilidad de tronco, base para casi todo lo demás.",
+"Fuente": [
+"3e75a7523f278146b6c1d7ff783dd2f8"
+],
+"Zona muscular específica": [
+"Core"
+],
+"titulo": "Plancha",
+"Notas": "Selección inspirada en \"Musculación sin aparatos\" (Mark Lauren) — descripción y ejecución propias.",
+"cuerpo": "## Ejecución\nAntebrazos y puntas de pie apoyados, cuerpo en línea recta, abdomen y glúteo contraídos activamente (no solo \"aguantar\").\n## Errores comunes\nCadera elevada (quita tensión al core) o hundida (carga la zona lumbar).\n\n*Selección inspirada en «Musculación sin aparatos» (Mark Lauren); descripción y ejecución propias.*"
+},
+{
+"id": "39b5a7523f2781aebec7d5509cb6b47a",
+"editado": "2026-09-26T14:06:00.000Z",
+"Nivel": "Básico",
+"Series/Reps o Duración": "3 series × 10-12 por pierna",
+"Material": [
+"Ninguno"
+],
+"Patrón de movimiento": [
+"Sentadilla"
+],
+"Categoría": "Fuerza",
+"Grupo muscular": [
+"Piernas"
+],
+"Descripción": "Trabajo unilateral de piernas, muy transferible al equilibrio y desplazamiento en guardia.",
+"Fuente": [
+"3e75a7523f278146b6c1d7ff783dd2f8"
+],
+"Zona muscular específica": [
+"Cuádriceps",
+"Glúteo"
+],
+"titulo": "Zancadas",
+"Notas": "Selección inspirada en \"Musculación sin aparatos\" (Mark Lauren) — descripción y ejecución propias.",
+"cuerpo": "## Ejecución\nDa un paso largo adelante, baja la rodilla trasera casi al suelo, ambas rodillas cerca de 90º, vuelve o alterna.\n## Errores comunes\nQue la rodilla delantera sobrepase mucho la punta del pie.\n\n*Selección inspirada en «Musculación sin aparatos» (Mark Lauren); descripción y ejecución propias.*"
+},
+{
+"id": "39b5a7523f2781ca8d45f51ff16c612a",
+"editado": "2026-09-26T14:06:00.000Z",
+"Nivel": "Intermedio",
+"Series/Reps o Duración": "3 series × 8-12 reps",
+"Material": [
+"Ninguno"
+],
+"Patrón de movimiento": [
+"Empuje horizontal"
+],
+"Categoría": "Fuerza",
+"Grupo muscular": [
+"Tren superior"
+],
+"Descripción": "Variante de flexión con manos casi juntas, que desplaza el enfoque hacia el tríceps.",
+"Fuente": [
+"3e75a7523f278146b6c1d7ff783dd2f8"
+],
+"Zona muscular específica": [
+"Tríceps",
+"Pecho"
+],
+"titulo": "Flexiones con agarre estrecho",
+"Notas": "Selección inspirada en \"Musculación sin aparatos\" (Mark Lauren) — descripción y ejecución propias.",
+"cuerpo": "## Ejecución\nManos casi juntas bajo el centro del pecho, codos pegados al cuerpo (no abiertos) durante todo el recorrido.\n## Errores comunes\nAbrir los codos hacia fuera — pierde el enfoque en tríceps y se acerca a una flexión normal.\n\n*Selección inspirada en «Musculación sin aparatos» (Mark Lauren); descripción y ejecución propias.*"
+},
+{
+"id": "39b5a7523f2781cbaf32c8a6f25d8a58",
+"editado": "2026-09-26T15:15:00.000Z",
+"Nivel": "Básico",
+"Series/Reps o Duración": "3 series × 10-15 reps",
+"Material": [
+"Ninguno"
+],
+"Patrón de movimiento": [
+"Tracción horizontal"
+],
+"Categoría": "Fuerza",
+"Grupo muscular": [
+"Tren superior"
+],
+"Descripción": "Tirón horizontal con autocarga: alternativa accesible a la dominada para trabajar espalda media.",
+"Fuente": [
+"3e75a7523f278146b6c1d7ff783dd2f8"
+],
+"Zona muscular específica": [
+"Espalda",
+"Bíceps"
+],
+"titulo": "Remo invertido (bajo barra o mesa)",
+"Notas": "Progresión: Cuanto más horizontal el cuerpo (pies más adelantados), más difícil. Selección inspirada en \"Musculación sin aparatos\" (Mark Lauren) — descripción y ejecución propias.",
+"cuerpo": "## Ejecución\nCuerpo en línea recta bajo una barra baja (o mesa resistente), tira del pecho hacia el punto de apoyo apretando los omóplatos.\n## Errores comunes\nDejar caer la cadera durante el tirón.\n\n*Selección inspirada en «Musculación sin aparatos» (Mark Lauren); descripción y ejecución propias.*"
+},
+{
+"id": "39b5a7523f2781cd8465ed3ee8e19cfb",
+"editado": "2026-09-26T15:15:00.000Z",
+"Nivel": "Básico",
+"Series/Reps o Duración": "3-4 series × 10-15 reps",
+"Material": [
+"Ninguno"
+],
+"Patrón de movimiento": [
+"Empuje horizontal"
+],
+"Categoría": "Fuerza",
+"Grupo muscular": [
+"Tren superior",
+"Core"
+],
+"Descripción": "Empuje horizontal con el propio peso: pecho, hombros, tríceps, y estabiliza el core.",
+"Fuente": [
+"3e75a7523f278146b6c1d7ff783dd2f8"
+],
+"Zona muscular específica": [
+"Pecho",
+"Hombro",
+"Tríceps",
+"Core"
+],
+"titulo": "Flexiones clásicas",
+"Notas": "Progresión: Rodillas en el suelo → completas → pies elevados → a una mano. Selección inspirada en \"Musculación sin aparatos\" (Mark Lauren) — descripción y ejecución propias.",
+"cuerpo": "## Ejecución\nManos a la anchura de hombros, cuerpo en línea recta de cabeza a talones. Baja controlado hasta casi rozar el pecho el suelo, empuja hacia arriba sin bloquear los codos de golpe.\n## Errores comunes\nCadera caída o muy elevada. Codos completamente abiertos a 90º (sobrecarga el hombro).\n\n*Selección inspirada en «Musculación sin aparatos» (Mark Lauren); descripción y ejecución propias.*"
+},
+{
+"id": "39b5a7523f2781feb528caaf98d1bda7",
+"editado": "2026-09-26T14:06:00.000Z",
+"Nivel": "Básico",
+"Series/Reps o Duración": "3 series × 20 reps (10 por lado)",
+"Material": [
+"Ninguno"
+],
+"Patrón de movimiento": [
+"Core/Anti-rotación"
+],
+"Categoría": "Core",
+"Grupo muscular": [
+"Core"
+],
+"Descripción": "Trabajo rotacional de core — relevante para la potencia de golpeo en boxeo.",
+"Fuente": [
+"3e75a7523f278146b6c1d7ff783dd2f8"
+],
+"Zona muscular específica": [
+"Core"
+],
+"titulo": "Torsiones rusas",
+"Notas": "Selección inspirada en \"Musculación sin aparatos\" (Mark Lauren) — descripción y ejecución propias.",
+"cuerpo": "## Ejecución\nSentado, tronco inclinado hacia atrás unos 45º, rota de lado a lado tocando el suelo junto a la cadera.\n## Errores comunes\nHacerlo muy rápido perdiendo el control de la rotación — mejor lento y con rango completo.\n\n*Selección inspirada en «Musculación sin aparatos» (Mark Lauren); descripción y ejecución propias.*"
+}
+],
+"bloques": [
+{
+"id": "39b5a7523f278104aa13ec5bc8036bdd",
+"editado": "2026-09-26T14:45:00.000Z",
+"Fuente": [
+"3e75a7523f27810fb9cbf989eb3fa150"
+],
+"Objetivo": [
+"Entrada",
+"Presión"
+],
+"Desarrollo": "Ambos boxeadores deben lanzar siempre series de golpes encadenados, nunca golpes sueltos.",
+"Método": "Asaltos",
+"Duración (min)": 10,
+"Tipo": "Técnica",
+"Formato": [
+"Sparring"
+],
+"Nivel": "Avanzado",
+"Notas": "Regla de formato de sparring técnico (USA Boxing): contacto real pero controlado. No tiene técnica propia: se aplica lo ya trabajado. Bueno para quien solo lanza jabs sueltos. Importa la calidad, no la cantidad. Error típico: lanzar la combinación entera sin ajustarla a lo que el rival deja abierto.",
+"titulo": "Sparring técnico — Solo combinaciones",
+"Zona": "Mixto",
+"Nº golpes": 0,
+"Distancia": "Media",
+"cuerpo": "> 🎯 **Para qué sirve — **Fluidez de encadenar combinaciones completas bajo presión real, en vez de golpes sueltos.\n## Estructura\n1. 2-3 asaltos de 2-3 min: ningún golpe suelto, todo en series de 2 o más golpes.\n## Cómo entrenarlo\n- [ ] 2-3 asaltos de 2-3 min, intensidad controlada\n\n*Fuente: USA Boxing, Grassroots Training Manual v.01 (2014), adaptado y resumido en español.*"
+},
+{
+"id": "39b5a7523f27813b8fa7ee42ed216648",
+"editado": "2026-09-26T14:44:00.000Z",
+"Fuente": [
+"3e75a7523f27810fb9cbf989eb3fa150"
+],
+"Objetivo": [
+"Presión"
+],
+"Desarrollo": "Ambos boxeadores deben mantenerse pegados, trabajando exclusivamente a distancia corta.",
+"Método": "Asaltos",
+"Duración (min)": 8,
+"Tipo": "Técnica",
+"Formato": [
+"Sparring"
+],
+"Nivel": "Avanzado",
+"Notas": "Regla de formato de sparring técnico (USA Boxing): contacto real pero controlado. No tiene técnica propia: se aplica lo ya trabajado. A esta distancia la defensa es con bloqueos y control de brazos, no con esquivas grandes. Error típico: alejarse en cuanto se incomoda.",
+"titulo": "Sparring técnico — Distancia corta (infighting)",
+"Zona": "Mixto",
+"Nº golpes": 0,
+"Distancia": "Corta",
+"cuerpo": "> 🎯 **Para qué sirve — **Trabajo pegado al rival: uppers cortos, ganchos, clinch técnico y salidas, una distancia que se evita en sparring libre.\n## Estructura\n1. 2-3 asaltos de 2 min: ambos se mantienen pegados, sin alejarse. Golpeo corto, defensa pegada y gestión del clinch.\n## Cómo entrenarlo\n- [ ] 2-3 asaltos de 2 min, intensidad controlada\n\n*Fuente: USA Boxing, Grassroots Training Manual v.01 (2014), adaptado y resumido en español.*"
+},
+{
+"id": "39b5a7523f27818dbd45db53eab087ba",
+"editado": "2026-09-26T14:45:00.000Z",
+"Fuente": [
+"3e75a7523f27810fb9cbf989eb3fa150"
+],
+"Objetivo": [
+"Entrada",
+"Presión"
+],
+"Desarrollo": "Ambos boxeadores solo pueden golpear al cuerpo, con cualquier tipo de golpe. Contacto real controlado.",
+"Método": "Asaltos",
+"Duración (min)": 10,
+"Tipo": "Técnica",
+"Formato": [
+"Sparring"
+],
+"Nivel": "Avanzado",
+"Notas": "Regla de formato de sparring técnico (USA Boxing): contacto real pero controlado. No tiene técnica propia: se aplica lo ya trabajado. Entrena el cambio de nivel y la flexión de piernas bajo presión real. Error típico: bajar la guardia de la cabeza al buscar el cuerpo.",
+"titulo": "Sparring técnico — Solo al cuerpo",
+"Zona": "Cuerpo",
+"Nº golpes": 0,
+"Distancia": "Media",
+"cuerpo": "> 🎯 **Para qué sirve — **Aísla el trabajo al cuerpo, que en sparring libre se descuida frente a la cabeza.\n## Estructura\n1. 2-3 asaltos de 2-3 min: solo se golpea al cuerpo, con cualquier golpe (recto, gancho, upper).\n## Cómo entrenarlo\n- [ ] 2-3 asaltos de 2-3 min, intensidad controlada\n\n*Fuente: USA Boxing, Grassroots Training Manual v.01 (2014), adaptado y resumido en español.*"
+},
+{
+"id": "39b5a7523f2781ce9f44caf90f1d3b51",
+"editado": "2026-09-26T14:45:00.000Z",
+"Fuente": [
+"3e75a7523f27810fb9cbf989eb3fa150"
+],
+"Objetivo": [
+"Defensa",
+"Salida"
+],
+"Desarrollo": "Foco exclusivo en movimiento, pivotes y juego de pies, sin buscar contacto de golpeo real.",
+"Método": "Asaltos",
+"Duración (min)": 10,
+"Tipo": "Defensa",
+"Formato": [
+"Sparring"
+],
+"Nivel": "Avanzado",
+"Notas": "Regla de formato de sparring técnico (USA Boxing): contacto real pero controlado. No tiene técnica propia: se aplica lo ya trabajado. Muy útil después de trabajar Pasos en V y Pivote. Error típico: volver a golpear en cuanto se abre un hueco.",
+"titulo": "Sparring técnico — Solo movimiento",
+"Zona": "Mixto",
+"Nº golpes": 0,
+"Distancia": "Larga",
+"cuerpo": "> 🎯 **Para qué sirve — **Juego de pies con un rival real: moverse, pivotar y controlar ángulos sin la presión de golpear.\n## Estructura\n1. 2-3 asaltos de 2-3 min: foco en movimiento, pivotes y ángulos; los golpes son secundarios o no existen.\n## Cómo entrenarlo\n- [ ] 2-3 asaltos de 2-3 min, 100% pies y ángulos\n\n*Fuente: USA Boxing, Grassroots Training Manual v.01 (2014), adaptado y resumido en español.*"
+},
+{
+"id": "39b5a7523f2781d9ab48ce6bff54066b",
+"editado": "2026-09-26T14:45:00.000Z",
+"Fuente": [
+"3e75a7523f27810fb9cbf989eb3fa150"
+],
+"Objetivo": [
+"Entrada",
+"Contra"
+],
+"Desarrollo": "Ambos boxeadores solo pueden lanzar golpes rectos (jab y cross), a cualquier objetivo. Contacto real controlado, no solo simulado.",
+"Método": "Asaltos",
+"Duración (min)": 10,
+"Tipo": "Técnica",
+"Formato": [
+"Sparring"
+],
+"Nivel": "Avanzado",
+"Notas": "Regla de formato de sparring técnico (USA Boxing): contacto real pero controlado. No tiene técnica propia: se aplica lo ya trabajado. Permite centrarse en la distancia exacta del directo. Error típico: colar un gancho \"sin querer\".",
+"titulo": "Sparring técnico — Solo golpes rectos",
+"Zona": "Cabeza",
+"Nº golpes": 0,
+"Distancia": "Larga",
+"cuerpo": "> 🎯 **Para qué sirve — **Aísla jab y cross: timing y distancia reales con presión de contacto, sin la complejidad de los golpes circulares. Primer paso hacia el sparring abierto.\n## Estructura\n1. 2-3 asaltos de 2-3 min al 60-70%: solo jab y cross, a cualquier objetivo.\n## Cómo entrenarlo\n- [ ] 2-3 asaltos de 2-3 min, intensidad 60-70%\n\n*Fuente: USA Boxing, Grassroots Training Manual v.01 (2014), adaptado y resumido en español.*"
+}
+],
+"correcciones": [],
+"sesiones": [],
+"planes": []
+}
