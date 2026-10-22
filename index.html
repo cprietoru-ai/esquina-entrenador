@@ -159,8 +159,9 @@ label.f .req{color:var(--rojo)}
 <script>
 "use strict";
 // ---------- Versión y novedades (la más nueva arriba) ----------
-const VERSION="1.0";
+const VERSION="1.1";
 const NOVEDADES=[
+  ["1.1","22-oct-2026",["Se actualiza sola: con tu contraseña (Ajustes → Sincronización) descarga tus datos cifrados al abrirla, en el móvil y en el PC.","El botón «Actualizar ahora» para traer lo último en cualquier momento."]],
   ["1.0","18-oct-2026",["Primera versión: biblioteca de Fundamentos, Ejercicios, Físico, Bloques y Correcciones con filtros.",
     "Planes y sesiones: el plan en curso, su progresión por semanas y la clase de hoy.",
     "Modo clase: temporizador de asaltos, Tabata, interválicas, estaciones y fases, con campana, vibración y pantalla grande.",
@@ -625,6 +626,7 @@ function tic(){clearTimeout(C.timer);if(!C.on)return;pintarCrono();if(C.corriend
 function salirClase(desdeAtras){C.on=false;C.corriendo=false;clearTimeout(C.timer);AU.cancelar();AU.mantener(false);pantallaEncendida(false);
   $("#clase").classList.remove("on");$("#clase").className="";document.body.style.overflow="";if(!desdeAtras)history.back()}
 window.addEventListener("popstate",()=>{if(C.on)salirClase(true)});
+document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible"&&!C.on&&Date.now()-(S.ultSinc||0)>5*60e3)sincronizar(false)});
 document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible"&&C.on){pantallaEncendida(true);AU.init();pintarCrono()}});
 function pintarClase(){
   const p=C.pasos[C.i],b=get(p.id);
@@ -880,6 +882,10 @@ function vAjustes(){
     <div class="bar"><label class="btn pri">Importar archivo<input type="file" id="importar" accept=".json,application/json" hidden></label><button class="btn" data-ejemplos="1">Cargar ejemplos</button></div>
     <div class="bar" style="margin-top:8px"><button class="btn" data-copia="1">Exportar copia de seguridad</button>${S.borrar?`<span>¿Borrar todo? <button class="btn sm dan" data-borrarsi="1">Sí</button> <button class="btn sm" data-borrarno="1">No</button></span>`:`<button class="btn dan" data-borrar="1">Borrar todo</button>`}</div>
   </section>
+  <section class="form"><b>Sincronización</b>
+    <p class="note">Con tu contraseña, la app descarga sola tus datos al abrirla (cifrados: sin ella nadie puede leerlos). Se guarda solo en este dispositivo. Ponla también en el PC para ver lo mismo.</p>
+    <label class="f">Contraseña<input type="password" id="a-clave" autocomplete="current-password" value="${esc(LS.get("esq.clave",""))}" placeholder="La que pusiste como ESQUINA_CLAVE"></label>
+    <div class="bar"><button class="btn sm pri" data-guardarclave="1">Guardar y actualizar</button><button class="btn sm" data-sinc="1">Actualizar ahora</button></div></section>
   <section class="form"><b>Envíos a Notion</b>
     <label class="f">Tu correo (el que lee la Rutina)<input type="email" id="a-correo" value="${esc(S.aj.correo)}" placeholder="tu@correo.com"></label>
     <button class="btn sm pri" data-guardaraj="1">Guardar</button></section>
@@ -892,7 +898,7 @@ function vAjustes(){
   <section class="form"><b>Fuentes</b><p class="note">Cada ficha dice de dónde sale. Los ejemplos públicos citan el manual de USA Boxing (Grassroots Training Manual v.01, 2014) y «Musculación sin aparatos» de Mark Lauren, con descripción propia.</p>
     ${lista("fuentes").map(f=>`<div><a class="int" href="#/f/${f.id}">${esc(f.titulo)}</a> <span class="note">· ${esc(f["Autor/Cuenta"]||"")}</span></div>`).join("")}</section>`;
 }
-function importar(txt){
+function importar(txt,sinc){
   let d;try{d=JSON.parse(txt)}catch(e){toast("Ese archivo no es de la Esquina");return}
   if(d&&d.app==="esquina-entrenador"&&d.tipo==="copia"){S.datos=d.datos;S.locales=d.locales||{};S.pend=d.pend||[];S.timers=d.timers||{};LS.set("esq.datos",S.datos);guardar();reindexar();toast("Copia restaurada");render();return}
   if(!d||d.app!=="esquina-entrenador"||!BASES.some(b=>Array.isArray(d[b]))){toast("Ese archivo no es de la Esquina");return}
@@ -905,7 +911,25 @@ function importar(txt){
   const envio=S.enviados.filter(e=>e.enviado<d.exportado).flatMap(e=>e.envios);
   for(const p of envio)if(p.tipo==="ficha")delete S.locales[p.id];
   if(!LS.set("esq.datos",S.datos)){toast("No cabe en este móvil");return}
-  guardar();reindexar();toast(d.parcial?"Cambios importados":"Datos importados");render();
+  guardar();reindexar();toast(sinc?"Datos actualizados ("+fechaCorta(d.exportado)+")":d.parcial?"Cambios importados":"Datos importados");render();
+}
+// ---------- Sincronización: datos cifrados en el repo, la clave solo en este dispositivo ----------
+async function sincronizar(manual){
+  const clave=LS.get("esq.clave","");S.ultSinc=Date.now();
+  if(!clave){if(manual)toast("Pon la contraseña en Ajustes → Sincronización");return}
+  let r;try{const res=await fetch("datos.enc.json",{cache:"no-store"});if(!res.ok){if(manual)toast("Todavía no hay datos publicados");return}r=await res.json()}
+  catch(e){if(manual)toast("Sin conexión: sigues con los datos guardados");return}
+  if(!r||r.cifrado!==1)return;
+  if(!manual&&S.datos&&!S.datos.ejemplos&&S.datos.exportado>=r.exportado)return;
+  try{
+    const u=t=>Uint8Array.from(atob(t),c=>c.charCodeAt(0));
+    const base=await crypto.subtle.importKey("raw",new TextEncoder().encode(clave),"PBKDF2",false,["deriveKey"]);
+    const k=await crypto.subtle.deriveKey({name:"PBKDF2",hash:"SHA-256",salt:u(r.sal),iterations:r.iter},base,{name:"AES-GCM",length:256},false,["decrypt"]);
+    const gz=await crypto.subtle.decrypt({name:"AES-GCM",iv:u(r.iv)},k,u(r.datos));
+    const txt=await new Response(new Blob([gz]).stream().pipeThrough(new DecompressionStream("gzip"))).text();
+    if(manual&&S.datos&&!S.datos.ejemplos&&S.datos.exportado>=r.exportado){toast("Ya tienes lo último ("+fechaCorta(r.exportado)+")");return}
+    importar(txt,true);
+  }catch(e){toast("La contraseña no abre los datos: revísala en Ajustes",4500)}
 }
 async function cargarEjemplos(){try{const r=await fetch("ejemplos.json",{cache:"no-cache"});const d=await r.json();d.ejemplos=true;S.datos=d;LS.set("esq.datos",d);reindexar();toast("Ejemplos cargados");render()}catch(e){toast("No se pudieron cargar los ejemplos (¿sin conexión?)")}}
 function descargar(nombre,obj){const b=new Blob([JSON.stringify(obj)],{type:"application/json"});const u=URL.createObjectURL(b);const a=document.createElement("a");a.href=u;a.download=nombre;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),2000)}
@@ -935,6 +959,8 @@ app.addEventListener("click",async ev=>{
   if(d.copiar){copiar();return}
   if(d.enviado){S.enviados.push({enviado:new Date().toISOString(),envios:S.pend});S.pend=[];S.esperando=false;guardar();render();toast("Hecho. La Rutina lo pasará a Notion");return}
   if(d.noenviado){S.esperando=false;render();return}
+  if(d.guardarclave){LS.set("esq.clave",$("#a-clave").value);await sincronizar(true);return}
+  if(d.sinc){await sincronizar(true);return}
   if(d.guardaraj){S.aj.correo=$("#a-correo").value.trim();guardar();toast("Guardado");render();return}
   if(d.aj){S.aj[d.aj]=!S.aj[d.aj];guardar();render();return}
   if(d.probar){AU.init();const c=AU.ctx;if(c){AU.campana(c.currentTime+.05);AU.aviso(c.currentTime+1.4)}vibrar([300,120,300]);return}
@@ -958,6 +984,7 @@ window.addEventListener("hashchange",()=>{const r=ruta();if(r.v!=="nuevo"&&r.v!=
   cargarDatos();
   if(!S.datos&&!LS.get("esq.iniciada",false)){LS.set("esq.iniciada",true);await cargarEjemplos()}
   render();
+  sincronizar(false);
   if("serviceWorker" in navigator)navigator.serviceWorker.register("sw.js").catch(()=>{});
   const vista=LS.get("esq.version",null);
   if(vista!==VERSION){LS.set("esq.version",VERSION);if(vista)setTimeout(()=>toast("Novedades de la versión "+VERSION+": "+NOVEDADES[0][2][0],5000),800)}

@@ -2,6 +2,10 @@
 
 La versión en uso sale en la cabecera de la app y en Ajustes.
 
+## 1.1 · 22-oct-2026
+- Se actualiza sola: con tu contraseña (Ajustes → Sincronización) descarga tus datos cifrados al abrirla, en el móvil y en el PC.
+- El botón «Actualizar ahora» para traer lo último en cualquier momento.
+
 ## 1.0 · 18-oct-2026
 - Primera versión: biblioteca de Fundamentos, Ejercicios, Físico, Bloques y Correcciones con filtros.
 - Planes y sesiones: el plan en curso, su progresión por semanas y la clase de hoy.
