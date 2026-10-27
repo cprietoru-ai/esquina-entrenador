@@ -116,6 +116,18 @@ label.f .req{color:var(--rojo)}
 .ab .a{background:var(--rojo)}.ab .b{background:var(--azul)}
 .ab b{font-family:var(--display);font-size:22px;font-weight:400;letter-spacing:1px;display:block}
 .toast{max-width:min(92vw,520px);text-align:center;position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:999px;font-weight:600;z-index:60}
+.semcab{font-family:var(--label);font-weight:700;font-size:14px;letter-spacing:.8px;color:var(--muted);margin:14px 0 2px}
+.semcab b{color:var(--ink)}
+.card.dia{flex-direction:row;align-items:center;gap:12px}
+.card.dia .dn{font-family:var(--display);font-size:30px;line-height:1;color:var(--rojo);width:54px;flex:none;text-transform:uppercase}
+.card.dia .dm{flex:1;min-width:0}
+.card.dia .acts{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.card.dia.hoy{border-color:var(--rojo)}
+.card.dia.pasado{opacity:.6}
+@media (max-width:520px){.card.dia{flex-wrap:wrap}.card.dia .acts{width:100%;justify-content:flex-start}}
+.picker{margin:0 0 4px}
+.bq{display:flex;gap:8px;align-items:flex-start;padding:6px 0;border-top:1px solid var(--line)}
+.bq .dm{flex:1;min-width:0}.bq .acts{display:flex;gap:4px;flex:none}
 .banner{background:var(--oro);color:#1d1715;border-radius:10px;padding:10px 12px;margin-bottom:12px;font-weight:600}
 /* ---------- Modo clase ---------- */
 #clase{position:fixed;inset:0;z-index:50;background:var(--prep);color:#fff;display:none;flex-direction:column;
@@ -159,8 +171,11 @@ label.f .req{color:var(--rojo)}
 <script>
 "use strict";
 // ---------- Versión y novedades (la más nueva arriba) ----------
-const VERSION="1.1";
+const VERSION="1.2";
 const NOVEDADES=[
+  ["1.2","27-oct-2026",["Nueva pestaña «Clases»: tus días de clase en un calendario, semana a semana, con lo que toca del plan.",
+    "En cada día: «Del plan» (su plantilla), «Generar» (una propuesta con tus bloques según la semana del plan, la última clase y tus indicaciones) o «Elegir» (copiar otra clase).",
+    "Revisas la clase antes de guardarla: cambia cualquier bloque con ↻, los minutos y el objetivo. Se manda a Notion desde «Enviar»."]],
   ["1.1","22-oct-2026",["Se actualiza sola: con tu contraseña (Ajustes → Sincronización) descarga tus datos cifrados al abrirla, en el móvil y en el PC.","El botón «Actualizar ahora» para traer lo último en cualquier momento."]],
   ["1.0","18-oct-2026",["Primera versión: biblioteca de Fundamentos, Ejercicios, Físico, Bloques y Correcciones con filtros.",
     "Planes y sesiones: el plan en curso, su progresión por semanas y la clase de hoy.",
@@ -270,8 +285,8 @@ const ir=h=>{location.hash=h};
 function ruta(){const h=location.hash.replace(/^#\/?/,"");const [v,...r]=h.split("/");return {v:v||"hoy",a:r.map(decodeURIComponent)}}
 function tabs(){
   const v=ruta().v,n=S.pend.length;
-  const T=[["hoy","Hoy"],["planes","Planes"],["bib","Biblioteca"],["enviar","Enviar"+(n?`<span class="cnt">${n}</span>`:"")],["ajustes","Ajustes"]];
-  const act={plan:"planes",ses:"planes",f:"bib",editar:"bib",nuevo:"bib",cerrar:"hoy"}[v]||v;
+  const T=[["hoy","Hoy"],["clases","Clases"],["planes","Planes"],["bib","Biblioteca"],["enviar","Enviar"+(n?`<span class="cnt">${n}</span>`:"")],["ajustes","Ajustes"]];
+  const act={plan:"planes",ses:"planes",f:"bib",editar:"bib",nuevo:"bib",cerrar:"hoy",borrador:"clases"}[v]||v;
   $("#tabs").innerHTML=T.map(([k,t])=>`<a href="#/${k}"${k===act?' aria-current="page"':""}>${t}</a>`).join("");
   const d=S.datos;
   $("#sub").textContent=(d?(d.ejemplos?"Ejemplos":"Datos del "+fechaCorta(d.exportado)):"Sin datos")+" · v"+VERSION;
@@ -279,7 +294,7 @@ function tabs(){
 function render(){
   tabs();
   const {v,a}=ruta();
-  const V={hoy:vHoy,planes:vPlanes,plan:()=>vPlan(a[0]),ses:()=>vSesion(a[0]),bib:()=>vBib(a[0]||S.fil._base||"ejercicios"),
+  const V={hoy:vHoy,clases:vClases,borrador:vBorrador,planes:vPlanes,plan:()=>vPlan(a[0]),ses:()=>vSesion(a[0]),bib:()=>vBib(a[0]||S.fil._base||"ejercicios"),
     f:()=>vFicha(a[0]),nuevo:()=>vEditor(a[0],null),editar:()=>vEditor(baseDe(a[0]),a[0]),cerrar:()=>vCerrar(a[0]),enviar:vEnviar,ajustes:vAjustes}[v]||vHoy;
   app.innerHTML=V();
   if(v!=="bib")window.scrollTo(0,0);
@@ -326,7 +341,7 @@ function vHoy(){
       if(e.terminado) h.push(`<div class="err"><b>${esc(p.titulo)} ha terminado.</b> Toca pasar a ${esc((e.despues||"el siguiente plan").replace(/[.\s]+$/,""))}. Cambia su Estado a «En curso» en Notion.</div>`);
       else if(e.plantilla) h.push(`<h3 class="s">Próxima clase · semana ${e.semana}, ${e.dia}</h3>${tarjetaSesion(e.plantilla,`<div class="note">Plantilla del plan. La Rutina crea la clase con fecha el mismo día; si la das antes, el cierre la crea en Notion.</div>`)}
         <div class="bar" style="margin-top:8px"><button class="btn pri big" data-clase="${e.plantilla.id}">▶ Dar esta clase</button></div>`);
-      else h.push(`<div class="card"><b>Próxima clase: semana ${e.semana}, ${e.dia}.</b><span class="note">Este plan no tiene plantilla para ese día: la prepara la Rutina el martes o el jueves. Cuando llegue el aviso con su archivo, impórtalo en Ajustes.</span></div>`);
+      else h.push(`<div class="card"><b>Próxima clase: semana ${e.semana}, ${e.dia}.</b><span class="note">Este plan no tiene plantilla para ese día. Prepárala tú en <a href="#/clases">Clases</a> (Generar o Elegir), o la prepara la Rutina el día de clase y llega sola a la app.</span></div>`);
     }
     const sinCerrar=e.pasadas.filter(s=>s["Estado"]==="Planificada");
     if(sinCerrar.length) h.push(`<h3 class="s">Clases sin cerrar</h3><div class="list">${sinCerrar.slice(-3).reverse().map(s=>tarjetaSesion(s,`<div class="bar"><a class="btn sm pri" href="#/cerrar/${s.id}">Cerrar la clase</a></div>`)).join("")}</div>`);
@@ -405,6 +420,249 @@ function vSesion(id){
   ${(s["Material necesario"]||[]).length?`<h3 class="s">Material</h3><div class="meta">${tags(s["Material necesario"])}</div>`:""}
   ${(s["Intención"]||[]).length?`<h3 class="s">Intención</h3><div class="meta">${tags(s["Intención"])}</div>`:""}
   <p class="note" style="margin-top:16px">${s.url?`<a href="${esc(s.url)}" target="_blank" rel="noopener">Abrir en Notion</a>`:""}</p>`;
+}
+
+// ---------- Clases: calendario, «Del plan», «Generar» y «Elegir» (1.2) ----------
+// Como el calendario de la Pizarra: tus días de clase, semana a semana. En cada día sin clase,
+// la siguiente del plan (su plantilla si la hay), una propuesta generada con tus bloques o una
+// copia de otra. Se guarda en este dispositivo y va a Notion por «Enviar»: la Rutina crea la Sesión.
+const DIAS_N=["domingo","lunes","martes","miércoles","jueves","viernes","sábado"];
+S.dias=LS.get("esq.dias",[2,4]);
+S.borr=LS.get("esq.borrador",null);
+const isoDe=d=>new Date(d.getTime()-d.getTimezoneOffset()*6e4).toISOString().slice(0,10);
+const ordSem=d=>(d+6)%7; // lunes primero
+const diasOrd=()=>[...S.dias].sort((a,b)=>ordSem(a)-ordSem(b));
+function diasClase(desde,semanas){const out=[],d=new Date(desde+"T12:00:00");for(let i=0;i<semanas*7;i++){if(S.dias.includes(d.getDay()))out.push(isoDe(d));d.setDate(d.getDate()+1)}return out}
+const lunesDe=f=>{const d=new Date(f+"T12:00:00");d.setDate(d.getDate()-ordSem(d.getDay()));return isoDe(d)};
+const fechaNum=f=>{const d=new Date(f+"T12:00:00");return d.getDate()+"-"+d.toLocaleDateString("es-ES",{month:"short"}).replace(".","")};
+const ordinal=i=>["1ª","2ª","3ª","4ª","5ª","6ª","7ª"][i]||(i+1)+"ª";
+// Qué clase de la semana es una sesión: por su día entre tus días de clase, o por «martes/jueves» del título
+function hueco(s){const i=diasOrd().indexOf(diaDe(s["Fecha"]));if(i>=0)return i;return diaNombre(s)==="jueves"?1:0}
+const planCorto=p=>p.titulo.split(/\s+[—-]\s+/)[0];
+function tramoDe(p,sem){
+  for(const l of (p["Estructura/Progresión"]||"").split("\n")){
+    const m=l.match(/^\s*Semanas?\s+(\d+)(?:\s*-\s*(\d+))?\s*·(.*)$/i);if(!m||sem<+m[1]||sem>+(m[2]||m[1]))continue;
+    const resto=m[3],dp=resto.indexOf(":"),cab=(dp>=0?resto.slice(0,dp):resto).split("·").map(x=>x.trim()).filter(Boolean);
+    return {linea:l.trim(),tema:cab.at(-1)||"",detalle:dp>=0?resto.slice(dp+1).trim():""};
+  }
+  return null;
+}
+const minPlan=p=>{const m=lineaDe(p?.["Estructura/Progresión"],"Frecuencia").match(/(\d+)\s*min/);return m?+m[1]:80};
+function plantillaPara(e,sem,i){
+  const c=e.plantillas.filter(s=>s["Semana"]===sem&&!/referencia/i.test(s.titulo));
+  return c.find(s=>diaNombre(s)===(i===0?"martes":i===1?"jueves":"-"))||(c.every(s=>!/martes|jueves/i.test(s.titulo))?c[i]:null)||null;
+}
+function referenciaPara(e,sem){
+  return e.plantillas.find(s=>{const m=s.titulo.match(/Semanas?\s+(\d+)(?:\s*-\s*(\d+))?\s*\(referencia\)/i);return m&&sem>=+m[1]&&sem<=+(m[2]||m[1])})||null;
+}
+// Qué toca del plan en cada día de clase sin sesión: la siguiente tras la última con semana
+function proyeccion(p,fechas){
+  const e=estadoPlan(p),n=Math.max(1,S.dias.length),hoy=hoyISO(),out={};
+  if(!fechas.length)return out;
+  const conSem=e.fechadas.filter(s=>s["Semana"]);
+  const previa=conSem.filter(s=>s["Fecha"]<fechas[0]).at(-1);
+  let sem=previa?previa["Semana"]:0,i=previa?hueco(previa):n-1;
+  const ocupado=new Set(lista("sesiones").filter(s=>s["Fecha"]&&!s["Plantilla"]).map(s=>s["Fecha"]));
+  const todas=[...new Set([...fechas,...conSem.map(s=>s["Fecha"]).filter(f=>f>=fechas[0])])].sort();
+  for(const f of todas){
+    const s=conSem.find(x=>x["Fecha"]===f);
+    if(s){sem=s["Semana"];i=hueco(s);continue}
+    if(ocupado.has(f)||f<hoy||!fechas.includes(f))continue;
+    i++;if(i>=n){i=0;sem++}
+    out[f]={sem,i,terminado:sem>(p["Duración (semanas)"]||99),plantilla:plantillaPara(e,sem,i),ref:referenciaPara(e,sem),tramo:tramoDe(p,sem)};
+  }
+  return out;
+}
+// Los días que enseña el calendario: desde el lunes de la semana pasada
+function ventana(){const ini=new Date(hoyISO()+"T12:00:00");ini.setDate(ini.getDate()-7);return diasClase(lunesDe(isoDe(ini)),S.calSem||6)}
+function planDe(f){const g=lista("planes").filter(esGrupo);if(g.length!==1)return [null,null];const fs=ventana();return [g[0],proyeccion(g[0],fs.includes(f)?fs:[...fs,f].sort())[f]||null]}
+function vClases(){
+  if(!S.datos)return vSinDatos();
+  const hoy=hoyISO(),fechas=ventana();
+  const grupo=lista("planes").filter(esGrupo),p=grupo.length===1?grupo[0]:null,pro=p?proyeccion(p,fechas):{};
+  const porFecha={};for(const s of lista("sesiones"))if(s["Fecha"]&&!s["Plantilla"])(porFecha[s["Fecha"]]=porFecha[s["Fecha"]]||[]).push(s);
+  let semana="";
+  const filas=fechas.map(f=>{
+    const ses=porFecha[f]||[],pr=pro[f],pas=f<hoy,lun=lunesDe(f);
+    const sigPr=fechas.filter(x=>lunesDe(x)===lun).map(x=>pro[x]).find(Boolean);
+    const cab=lun!==semana?(semana=lun,`<div class="semcab">Semana del ${esc(fechaCorta(lun))}${sigPr&&!sigPr.terminado?` · <b>${esc(planCorto(p))}, semana ${sigPr.sem}</b>${sigPr.tramo?.tema?` · ${esc(sigPr.tramo.tema)}`:""}`:""}</div>`):"";
+    const info=ses.length?ses.map(s=>`<a class="int" href="#/ses/${s.id}">${esc(s.titulo)}</a> ${tags(s["Estado"])}${s._local?' <span class="tag l">Sin pasar a Notion</span>':""}`).join("<br>")
+      :pr?(pr.terminado?`<span class="note">El plan ha terminado: toca ${esc((estadoPlan(p).despues||"el siguiente plan").replace(/[.\s]+$/,""))}</span>`
+        :`<span class="note">Toca: semana ${pr.sem}, ${ordinal(pr.i)} clase${pr.plantilla?` · plantilla «${esc(pr.plantilla.titulo)}»`:""}</span>`)
+      :`<span class="note">${pas?"Sin clase":"Sin preparar"}</span>`;
+    const acts=ses.length?"":`${pr?.plantilla&&!pr.terminado?`<button class="btn sm pri" data-usar="${f}">Del plan</button>`:""}<button class="btn sm ${pr?.plantilla?"":"pri"}" data-gen="${f}">Generar</button><button class="btn sm" data-elegir="${f}">Elegir</button>`;
+    return cab+`<div class="card dia${f===hoy?" hoy":""}${pas&&!ses.length?" pasado":""}"><span class="dn">${esc(DIAS_N[diaDe(f)].slice(0,3))}</span><div class="dm"><b>${esc(fechaCorta(f))}</b><br>${info}</div><div class="acts">${acts}</div></div>
+      ${S.genDia===f?htmlGenerar(f,pr,p):""}${S.elegirDia===f?htmlElegir(f,pr,p):""}`;
+  }).join("");
+  return `<h2 class="t">Clases</h2>
+  <p class="note">Tus días de clase, semana a semana. Prepara cada clase desde el plan, generándola con tus bloques o copiando otra. Se guarda en este dispositivo y la mandas a Notion desde «Enviar»; si no preparas una, la Rutina la hace el día de clase como siempre.</p>
+  <div class="bar" style="margin:8px 0"><span class="note">Días de clase:</span><div class="chiprow">${[1,2,3,4,5,6,0].map(d=>`<button class="chip" data-dia="${d}" aria-pressed="${S.dias.includes(d)}">${esc(DIAS_N[d].slice(0,2))}</button>`).join("")}</div></div>
+  ${grupo.length>1?`<div class="err">Hay ${grupo.length} planes de grupo «En curso»: deja solo uno en Notion para saber qué toca.</div>`:!p?`<div class="note">No hay plan de grupo en curso: «Generar» usa solo tus indicaciones.</div>`:""}
+  ${S.dias.length?`<div class="list">${filas}</div><div class="bar" style="margin-top:12px"><button class="btn" data-calmas="1">Ver más semanas</button></div>`:`<div class="empty"><b>Elige tus días de clase</b>Toca los días de arriba.</div>`}`;
+}
+// Lo que pidió la última clase en «Para la próxima»
+function paraLaProxima(s){const out=[];let dentro=false;for(const l of (s?.cuerpo||"").split("\n")){if(/^#{1,4}\s/.test(l)){dentro=/para la pr[oó]xima/i.test(l);continue}if(dentro&&l.trim())out.push(l.replace(/^[-*]\s*(\[.\]\s*)?/,"").trim())}return out.join(" ")}
+function ultimaClase(p,cerrada=true){const hoy=hoyISO();const l=(p?sesDePlan(p):lista("sesiones")).filter(s=>s["Fecha"]&&!s["Plantilla"]&&s["Fecha"]<=hoy&&(cerrada?s["Estado"]==="Hecha":s["Estado"]!=="Saltada")).sort((a,b)=>a["Fecha"].localeCompare(b["Fecha"]));return l.at(-1)||null}
+function htmlGenerar(f,pr,p){
+  const ul=ultimaClase(p),prox=paraLaProxima(ul);
+  return `<div class="form picker"><b>Generar la clase del ${esc(fechaCorta(f))}</b>
+    ${pr&&!pr.terminado?`<div class="note">Del plan: semana ${pr.sem}, ${ordinal(pr.i)} clase${pr.tramo?` · ${esc(pr.tramo.tema)}${pr.tramo.detalle?": "+esc(pr.tramo.detalle):""}`:""}${pr.ref?`. Se apoya en «${esc(pr.ref.titulo)}».`:""}</div>`:""}
+    ${ul?`<div class="note">Última clase (${esc(fechaCorta(ul["Fecha"]))})${prox?`: «${esc(prox)}»`:ul["Sensaciones"]?`: «${esc(ul["Sensaciones"])}»`:": sin notas"}</div>`:""}
+    <label class="f">Indicaciones (opcional)<textarea id="g-ind" placeholder="p. ej. contras sobre el jab; hoy hay poca gente; nada de sparring">${esc(S.genInd||"")}</textarea></label>
+    <label class="f">Duración (min)<input type="number" id="g-min" value="${minPlan(p)}" min="30" max="150" step="5"></label>
+    <div class="bar"><button class="btn pri" data-gensi="${f}">Generar</button><button class="btn sm" data-genno="1">Cancelar</button></div>
+    <p class="note">Es una propuesta con tus bloques: la revisas y cambias lo que quieras antes de guardarla.</p></div>`;
+}
+function htmlElegir(f,pr,p){
+  const pls=lista("sesiones").filter(s=>s["Plantilla"]).sort((a,b)=>(p&&(b["Plan"]||[]).includes(p.id))-(p&&(a["Plan"]||[]).includes(p.id))||(a["Semana"]||0)-(b["Semana"]||0));
+  const dadas=lista("sesiones").filter(s=>s["Fecha"]&&!s["Plantilla"]).sort((a,b)=>b["Fecha"].localeCompare(a["Fecha"])).slice(0,20);
+  const it=s=>`<button class="card" data-copiarclase="${s.id}"><b>${esc(s.titulo)}</b><span class="note">${s["Fecha"]?esc(fechaCorta(s["Fecha"])):"Plantilla"}${s["Duración (min)"]?" · "+s["Duración (min)"]+" min":""}</span></button>`;
+  return `<div class="form picker"><b>Elegir una clase para el ${esc(fechaCorta(f))}</b><div class="note">Se copia con la fecha nueva y la revisas antes de guardarla; la original no cambia.</div>
+    ${pls.length?`<h3 class="s">Plantillas y referencias</h3><div class="list">${pls.map(it).join("")}</div>`:""}
+    ${dadas.length?`<h3 class="s">Clases anteriores</h3><div class="list">${dadas.map(it).join("")}</div>`:""}
+    ${!pls.length&&!dadas.length?'<div class="note">Todavía no hay clases.</div>':""}
+    <div class="bar" style="margin-top:8px"><button class="btn sm" data-elegirno="1">Cancelar</button></div></div>`;
+}
+// ----- Generar: el esqueleto del grupo (criterio-fichas-boxeo) relleno con tus bloques -----
+const FASES=[["Calentamiento",15,1],["Físico",25,1],["Parejas y manoplas",25,2],["Saco",10,1],["Vuelta a la calma",5,1]];
+function faseDe(b){const F=b["Formato"]||[],h=x=>F.includes(x),o=[];
+  if(h("Calentamiento"))return ["Calentamiento"];
+  if(h("Vuelta a la calma")&&!h("Físico"))return ["Vuelta a la calma"];
+  if(h("Físico"))return ["Físico"];
+  if(h("Pareja")||h("Manoplas")||h("Sparring")||h("Sombra"))o.push("Parejas y manoplas");
+  if(h("Saco"))o.push("Saco");
+  if(h("Circuito")&&!o.length)o.push("Físico");
+  return o;
+}
+const VACIAS=new Set("repaso nada poca poco mucha mucho gente hoy para como sobre entre desde hasta donde cuando cada todo toda todos todas semana semanas clase clases grupo intermedio avanzado iniciacion basico tambien solo sola pero esta este estos estas hacer hace sale salga sesion bloque bloques primer primera segundo minutos golpes golpe trabajo trabajar".split(" "));
+function claves(t){t=norm(t).replace(/\b(nada de|sin|no)\s+[a-zñ]+/g," ");const out=new Map();
+  for(const w of [...(t.match(/\d(?:-\d)+/g)||[]),...t.split(/[^a-zñ0-9-]+/).filter(w=>w.length>3&&!VACIAS.has(w)&&!/^\d/.test(w))]){const k=w.length>6?w.slice(0,6):w;if(!out.has(k))out.set(k,w)}
+  return [...out].map(([k,w])=>({k,w}))}
+function textoBloque(b){return norm([b.titulo,b["Objetivo"],b["Desarrollo"],b["Tipo"],b["Notas"],...(b["Ejercicios"]||[]).map(i=>{const e=get(i);return e?[e.titulo,e["Notación"],(e["Intención"]||[]).join(" ")].join(" "):""})].join(" "))}
+const NIV={"Básico":0,"Iniciación":0,"Intermedio":1,"Avanzado":2};
+function generarClase(f,pr,p,ind,min){
+  const tramo=pr?.tramo,ref=pr?.ref,ul=ultimaClase(p),prox=paraLaProxima(ul);
+  const kT=claves([tramo?.tema,tramo?.detalle].join(" ")),kI=claves(ind),kP=claves(prox);
+  const sparring=/sparring/.test(norm([tramo?.detalle,ind].join(" ")))&&!/(sin|nada de|no)\s+sparring/.test(norm(ind));
+  const tipoPide=t=>{const x=norm([tramo?.tema,tramo?.detalle,ind].join(" "));return (t==="Contraataque"&&/contra/.test(x))||(t==="Defensa"&&/defens|esquiv|bloque/.test(x))||(t==="Técnica"&&/combina|tecnic/.test(x))};
+  const nivP=NIV[p?.["Nivel"]]??1;
+  const recientes=(p?sesDePlan(p):lista("sesiones")).filter(s=>s["Fecha"]&&s["Fecha"]<f&&!s["Plantilla"]).sort((a,b)=>b["Fecha"].localeCompare(a["Fecha"])).slice(0,3);
+  const usado=id=>recientes.findIndex(s=>(s["Bloques"]||[]).includes(id)||(s.cuerpo||"").includes("#"+id));
+  const refIds=new Set(ref?[...(ref["Bloques"]||[]),...[...(ref.cuerpo||"").matchAll(/\]\(#([0-9a-f]{32})\)/g)].map(m=>m[1])]:[]);
+  const nota=(b,fase)=>{const t=textoBloque(b),why=[];let n=Math.random()*.8;
+    // Las palabras del tramo y de tus indicaciones eligen la técnica (parejas y saco), no el físico ni el calentamiento
+    const tec=fase==="Parejas y manoplas"||fase==="Saco",m=ks=>tec?ks.filter(o=>t.includes(o.k)):[];
+    const hT=m(kT),hI=m(kI),hP=m(kP);
+    n+=hT.length*3+hI.length*5+hP.length*2;
+    if(hI.length)why.push("lo que pides: "+hI.slice(0,2).map(o=>o.w).join(", "));
+    if(hT.length)why.push("lo que toca en el plan: "+hT.slice(0,2).map(o=>o.w).join(", "));
+    if(hP.length)why.push("lo que pidió la última clase");
+    if(refIds.has(b.id)){n+=6;why.unshift("está en la referencia del tramo")}
+    if(tec&&tipoPide(b["Tipo"])){n+=3;if(!why.length)why.push(b["Tipo"].toLowerCase()+", como pide el tramo")}
+    const nb=NIV[b["Nivel"]]??0;if(nb>nivP)n-=4;if(nb===nivP)n+=1;
+    if((b["Formato"]||[]).includes("Sparring")&&!sparring)n-=20;
+    const u=usado(b.id),fija=fase==="Calentamiento"||fase==="Vuelta a la calma";
+    if(u>=0)n-=fija?1:(fase==="Físico"?6:4)-u;
+    if(fase==="Físico"){if(/autocarga|tier\s*\d/i.test(b.titulo))n-=8;if(/grupo/i.test(b.titulo))n+=3;if(u<0){n+=2;why.push("rota el físico de grupo: no salió en las últimas clases")}}
+    if(!why.length)why.push(fase==="Calentamiento"?"para entrar en calor":fase==="Vuelta a la calma"?"para bajar pulsaciones y estirar":"completa la fase");
+    return {n,why:why[0]}};
+  const total=FASES.reduce((a,x)=>a+x[1],0),k=(min||total)/total;
+  const fases=FASES.map(([nombre,m,cuantos])=>{
+    const cand=lista("bloques").filter(b=>faseDe(b).includes(nombre)).map(b=>({id:b.id,...nota(b,nombre)})).sort((a,b)=>b.n-a.n);
+    return {nombre,min:Math.max(5,Math.round(m*k/5)*5),cand:cand.map(c=>[c.id,c.why]),bloques:cand.slice(0,cuantos).map(c=>({id:c.id,porque:c.why}))};
+  }).filter(x=>x.cand.length);
+  // Un bloque no se repite entre fases
+  const vistos=new Set();for(const fa of fases){fa.bloques=fa.bloques.filter(b=>!vistos.has(b.id));for(const b of fa.bloques)vistos.add(b.id);
+    while(fa.bloques.length<(FASES.find(x=>x[0]===fa.nombre)[2])){const c=fa.cand.find(([id])=>!vistos.has(id));if(!c)break;fa.bloques.push({id:c[0],porque:c[1]});vistos.add(c[0])}}
+  const tema=(ind||"").split(/[.,;\n]/)[0].trim().replace(/^./,c=>c.toUpperCase())||tramo?.tema||"Clase";
+  return borradorBase(f,pr,p,{origen:"generada",tema,ind,fases,
+    objetivo:(ind&&!tramo?ind:(tramo?.detalle?tramo.detalle.replace(/[.\s]+$/,"")+".":"")).replace(/^./,c=>c.toUpperCase()),
+    vigilar:vigilarDe(fases)||ultimaClase(p,false)?.["Cosas a vigilar"]||""});
+}
+function vigilarDe(fases){const ej=new Set(fases.flatMap(f=>f.bloques.flatMap(b=>get(b.id)?.["Ejercicios"]||[])));
+  return lista("correcciones").filter(c=>(c["Ejercicios relacionados"]||[]).some(i=>ej.has(i))).slice(0,3).map(c=>c.titulo).join("; ")}
+function borradorBase(f,pr,p,x){
+  const ul=ultimaClase(p),ua=ultimaClase(p,false);
+  return {fecha:f,plan:p?.id||null,sem:pr&&!pr.terminado?pr.sem:null,hueco:pr?.i??null,nAlumnos:ua?.["Nº alumnos aprox"]||"",
+    titulo:"",prox:paraLaProxima(ul),ultima:ul?.id||null,ref:pr?.ref?.id||null,base:null,...x};
+}
+// Elegir / Del plan: copia una clase o plantilla con sus fases y sus «por qué»
+function fasesDe(s){const out=[];let fa=null;
+  for(const l of (s.cuerpo||"").split("\n")){
+    const h=l.match(/^###\s+(?:\d+\.\s*)?(.*)$/);
+    if(h){const t=h[1].replace(/\*\*/g,""),m=t.match(/(\d+)\s*min/);fa={nombre:t.split(/\s+[—-]\s+/)[0].trim(),min:m?+m[1]:null,bloques:[],cand:[]};out.push(fa);continue}
+    for(const m of l.matchAll(/\[([^\]]*)\]\(#([0-9a-f]{32}|loc[0-9a-z]+)\)/g)){if(baseDe(m[2])!=="bloques")continue;
+      if(!fa){fa={nombre:"Clase",min:null,bloques:[],cand:[]};out.push(fa)}
+      const r=l.slice(l.indexOf(m[0])+m[0].length).replace(/^\s*[—-]\s*/,"").replace(/^\d+\s*min[.,]?\s*/,"").trim();
+      fa.bloques.push({id:m[2],porque:r})}}
+  const conB=out.filter(x=>x.bloques.length);
+  if(!conB.length&&(s["Bloques"]||[]).length)return [{nombre:"Clase",min:s["Duración (min)"]||null,cand:[],bloques:s["Bloques"].filter(get).map(id=>({id,porque:""}))}];
+  for(const fa of conB){const c=faseCanon(fa.nombre);fa.cand=c?lista("bloques").filter(b=>faseDe(b).includes(c)).map(b=>[b.id,""]):[];
+    for(const x of fa.bloques)if(!fa.cand.some(([id])=>id===x.id))fa.cand.unshift([x.id,x.porque]);}
+  return conB;
+}
+// El nombre de fase de una sesión copiada, en el esqueleto del grupo (para ↻ y «Añadir otro»)
+function faseCanon(n){n=norm(n);return /calent/.test(n)?"Calentamiento":/calma|estira/.test(n)?"Vuelta a la calma":/fisic|fuerza|circuit/.test(n)?"Físico":/saco/.test(n)?"Saco":/parej|manopl|sparr|sombra|tecnic|boxeo|contra|defens/.test(n)?"Parejas y manoplas":null}
+function copiarClase(f,pr,p,s){
+  const tema=(s.titulo.split(":").slice(1).join(":").trim())||s.titulo;
+  return borradorBase(f,pr,p,{origen:s["Plantilla"]?"plantilla":"copia",tema,base:s["Plantilla"]?s.id:null,copiaDe:s.id,
+    fases:fasesDe(s),objetivo:s["Objetivo"]||"",vigilar:s["Cosas a vigilar"]||""});
+}
+function tituloBorr(B){const p=get(B.plan),d=DIAS_N[diaDe(B.fecha)];
+  return `${p?planCorto(p):"Suelta"} · ${fechaNum(B.fecha)} · ${B.sem?`Semana ${B.sem}, ${d}`:d[0].toUpperCase()+d.slice(1)}: ${B.tema}`}
+function abrirBorrador(B){B.titulo=tituloBorr(B);S.borr=B;LS.set("esq.borrador",B);S.genDia=S.elegirDia=null;ir("/borrador")}
+function vBorrador(){
+  const B=S.borr;if(!B)return `<div class="empty"><b>No hay ninguna clase a medias</b><a href="#/clases">Volver a Clases</a></div>`;
+  const tot=B.fases.reduce((a,f)=>a+(+f.min||0),0),p=get(B.plan);
+  return `<button class="back" onclick="history.back()">← Atrás</button>
+  <h2 class="t">Revisa la clase</h2>
+  <p class="note">${esc(fechaCorta(B.fecha))}${p?` · ${esc(p.titulo)}${B.sem?`, semana ${B.sem}`:""}`:""} · ${B.origen==="generada"?"propuesta generada":B.origen==="plantilla"?"desde la plantilla del plan":"copia de otra clase"}. Cambia lo que quieras: ↻ pone el siguiente bloque que encaja.</p>
+  <div class="form">
+    <label class="f">Título<input type="text" id="b-tit" value="${esc(B.titulo)}"></label>
+    <label class="f">Objetivo<textarea id="b-obj" placeholder="Qué debe salir sabiendo hacer el grupo">${esc(B.objetivo)}</textarea></label>
+    <label class="f">Cosas a vigilar<textarea id="b-vig" placeholder="Errores típicos a corregir durante la clase">${esc(B.vigilar)}</textarea></label>
+  </div>
+  <h3 class="s">Estructura · ${tot} min</h3>
+  <div class="list">${B.fases.map((fa,i)=>`<div class="card"><div class="bar" style="justify-content:space-between"><b>${i+1}. ${esc(fa.nombre)}</b><span class="bar"><input type="number" class="b-min" data-fi="${i}" value="${esc(fa.min??"")}" min="0" max="90" step="5" style="width:80px"> <span class="note">min</span></span></div>
+    ${fa.bloques.map((b,j)=>`<div class="bq"><div class="dm"><a class="int" href="#/f/${b.id}">${esc(titulo(b.id))}</a>${b.porque?`<div class="note">${esc(b.porque)}</div>`:""}</div><span class="acts">${fa.cand.length>1?`<button class="btn sm" data-otro="${i}:${j}" title="Otro bloque" aria-label="Cambiar por otro bloque">↻</button>`:""}<button class="btn sm" data-quitab="${i}:${j}" aria-label="Quitar">✕</button></span></div>`).join("")}
+    ${fa.cand.length>fa.bloques.length?`<button class="btn sm" data-masb="${i}">+ Añadir otro</button>`:""}</div>`).join("")}</div>
+  ${B.prox?`<div class="vig"><b>La última clase pidió</b>${esc(B.prox)}</div>`:""}
+  <div class="bar" style="margin:14px 0"><button class="btn pri big" data-guardarclase="1">Guardar la clase</button><button class="btn dan" data-descartar="1">Descartar</button></div>`;
+}
+function leerBorrador(){const B=S.borr;if(!B||!$("#b-tit"))return;B.titulo=$("#b-tit").value.trim();B.objetivo=$("#b-obj").value.trim();B.vigilar=$("#b-vig").value.trim();
+  document.querySelectorAll(".b-min").forEach(x=>{B.fases[+x.dataset.fi].min=x.value===""?null:+x.value});LS.set("esq.borrador",B)}
+function otroBloque(i,j){const fa=S.borr.fases[i],usados=new Set(S.borr.fases.flatMap(f=>f.bloques.map(b=>b.id)));
+  const pos=fa.cand.findIndex(([id])=>id===fa.bloques[j].id);
+  for(let k=1;k<=fa.cand.length;k++){const c=fa.cand[(pos+k+fa.cand.length)%fa.cand.length];if(!usados.has(c[0])){fa.bloques[j]={id:c[0],porque:c[1]};return}}
+}
+const MATERIAL={Saco:"Sacos",Manoplas:"Manoplas",Pareja:"Guantes",Sparring:"Guantes"};
+function guardarClase(){
+  leerBorrador();const B=S.borr,p=get(B.plan);
+  if(!B.titulo){toast("Ponle un título");return}
+  if(!B.objetivo){toast("Escribe el objetivo: es obligatorio en las sesiones");return}
+  const fases=B.fases.filter(f=>f.bloques.length);if(!fases.length){toast("La clase no tiene ningún bloque");return}
+  const tot=fases.reduce((a,f)=>a+(+f.min||0),0),bl=fases.flatMap(f=>f.bloques.map(b=>b.id)),bs=bl.map(get).filter(Boolean);
+  const ej=[...new Set(bs.flatMap(b=>b["Ejercicios"]||[]))],fis=[...new Set(bs.flatMap(b=>b["Físico"]||[]))];
+  const forms=new Set(bs.flatMap(b=>b["Formato"]||[]));
+  const mat=[...new Set(["Cronómetro",...[...forms].map(x=>MATERIAL[x]).filter(Boolean),...(bs.some(b=>/comba/i.test(b.titulo))?["Combas"]:[])])];
+  const tipos=new Set(bs.map(b=>b["Tipo"]).filter(t=>t&&t!=="Acondicionamiento"));
+  const nivel=p?.["Nivel"]==="Básico"?"Iniciación":(p?.["Nivel"]||"Mixto");
+  const plan=p?`[${p.titulo}](#${p.id})`:"ningún plan";
+  const parte=[`Parte de: ${plan}.`,B.sem?`Semana ${B.sem}, ${ordinal(B.hueco??0)} clase de la semana.`:"",
+    B.origen==="generada"?(B.ind?`Indicaciones: ${B.ind.replace(/[.\s]+$/,"")}.`:""):`Copia de «${titulo(B.copiaDe)}».`,
+    B.prox?`La última clase pidió: ${B.prox.replace(/[.\s]+$/,"")}.`:"",
+    `Preparada en la Esquina el ${fechaNum(hoyISO())}${B.origen==="generada"?" (propuesta generada y revisada)":""}.`].filter(Boolean).join(" ");
+  const cuerpo=[parte,`## Estructura (${tot} min)`,...fases.flatMap((f,i)=>[`### ${i+1}. ${f.nombre}${f.min?` — ${f.min} min`:""}`,...f.bloques.map(b=>`- [${titulo(b.id)}](#${b.id})${b.porque?` — ${b.porque.replace(/[.\s]+$/,"")}.`:""}`)]),"## Para la próxima"].join("\n");
+  const item={titulo:B.titulo,"Fecha":B.fecha,"Estado":"Planificada","Plan":p?[p.id]:[],"Semana":B.sem,"Objetivo":B.objetivo,"Cosas a vigilar":B.vigilar,
+    "Duración (min)":tot,"Nivel":nivel,"Foco":tipos.size===1&&[...tipos][0]==="Contraataque"?"Contraataques":"Mixto","Formato":forms.has("Circuito")?"Mixto":"Bloque común",
+    "Intención":[...new Set(ej.flatMap(i=>get(i)?.["Intención"]||[]))],"Material necesario":mat,"Nº alumnos aprox":B.nAlumnos||"",
+    "Bloques":bl,"Ejercicios":ej,"Físico":fis,"Plantilla":false,"Plantilla base":B.base?[B.base]:[],cuerpo};
+  for(const k of Object.keys(item))if(item[k]===null||item[k]===""||(Array.isArray(item[k])&&!item[k].length&&k!=="Plan"))delete item[k];
+  const id=("loc"+uid().padEnd(29,"0")).slice(0,32);
+  S.locales[id]={base:"sesiones",accion:"nuevo",item};
+  S.pend.push({tipo:"sesion",uid:uid(),creado:new Date().toISOString(),id,titulo:B.titulo,fecha:B.fecha,
+    sesion:{...item,cuerpo:undefined},cuerpo,titulos:Object.fromEntries([...bl,...ej,...fis,...(p?[p.id]:[]),...(B.base?[B.base]:[])].map(i=>[i,titulo(i)]))});
+  S.borr=null;LS.set("esq.borrador",null);guardar();reindexar();toast("Clase guardada. Mándala a Notion desde Enviar");ir("/ses/"+id);
 }
 
 // ---------- Biblioteca con filtros ----------
@@ -716,7 +974,7 @@ function guardarCierre(id){
   const s=get(id),estado=document.querySelector("[data-estado][aria-pressed=true]")?.dataset.estado||"Hecha";
   const c={tipo:"cierre",uid:uid(),creado:new Date().toISOString(),estado,fecha:$("#c-fecha").value.trim(),
     sensaciones:$("#c-sens").value.trim(),paraLaProxima:$("#c-prox").value.trim(),enSuLugar:$("#c-lugar").value.trim(),
-    sesion:{id,titulo:s.titulo,plantilla:!!s["Plantilla"],plan:(s["Plan"]||[])[0]||null,semana:s["Semana"]||null}};
+    sesion:{id,titulo:s.titulo,plantilla:!!s["Plantilla"],plan:(s["Plan"]||[])[0]||null,semana:s["Semana"]||null,fecha:s["Fecha"]||null}};
   if(!/^\d{4}-\d{2}-\d{2}$/.test(c.fecha)){toast("La fecha va como AAAA-MM-DD");return}
   if(estado==="Hecha"&&!c.sensaciones){toast("Apunta las Sensaciones: es lo que usa la Rutina para preparar la siguiente");return}
   if(estado==="Saltada"&&!c.enSuLugar){toast("Di qué se hizo en su lugar");return}
@@ -844,23 +1102,23 @@ function guardarFicha(){
 // base64 del JSON: el correo puede partir líneas largas y así no se rompe nada
 const b64=t=>{const b=new TextEncoder().encode(t);let s="";for(let i=0;i<b.length;i+=8192)s+=String.fromCharCode(...b.subarray(i,i+8192));return btoa(s)};
 function textoEnvio(){
-  const lin=S.pend.map(p=>p.tipo==="cierre"?`• Cierre: ${p.sesion.titulo} → ${p.estado} (${p.fecha})`:`• ${p.accion==="nuevo"?"Nuevo":"Cambio en"} ${p.base==="ejercicios"?"ejercicio":"bloque"}: ${p.titulo}`);
+  const lin=S.pend.map(p=>p.tipo==="cierre"?`• Cierre: ${p.sesion.titulo} → ${p.estado} (${p.fecha})`:p.tipo==="sesion"?`• Clase preparada: ${p.titulo}`:`• ${p.accion==="nuevo"?"Nuevo":"Cambio en"} ${p.base==="ejercicios"?"ejercicio":"bloque"}: ${p.titulo}`);
   const datos={app:"esquina-entrenador",version:VERSION,enviado:new Date().toISOString(),envios:S.pend};
   return {asunto:`[Esquina] Para Notion · ${hoyISO()} · ${S.pend.length} ${S.pend.length===1?"cambio":"cambios"}`,
     cuerpo:`Envío de la Esquina del Entrenador para el Centro de Boxeo de Notion. Lo aplica la Rutina de boxeo (skill esquina-entrenador). No lo edites.\n\n${lin.join("\n")}\n\n-----ESQUINA-INICIO-----\n${b64(JSON.stringify(datos)).match(/.{1,76}/g).join("\n")}\n-----ESQUINA-FIN-----\n`};
 }
 function vEnviar(){
   const n=S.pend.length;
-  const fila=p=>`<div class="card"><div class="meta"><span class="tag ${p.tipo==="cierre"?"r":"l"}">${p.tipo==="cierre"?"Cierre":p.accion==="nuevo"?"Nuevo":"Cambio"}</span><span>${esc(new Date(p.creado).toLocaleString("es-ES",{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"}))}</span></div>
+  const fila=p=>`<div class="card"><div class="meta"><span class="tag ${p.tipo==="cierre"?"r":"l"}">${p.tipo==="cierre"?"Cierre":p.tipo==="sesion"?"Clase":p.accion==="nuevo"?"Nuevo":"Cambio"}</span><span>${esc(new Date(p.creado).toLocaleString("es-ES",{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"}))}</span></div>
     <b>${esc(p.tipo==="cierre"?p.sesion.titulo:p.titulo)}</b>${p.tipo==="cierre"?`<span class="note">${esc(p.estado)} · ${esc(p.sensaciones||p.enSuLugar||"")}</span>`:""}
-    <div class="bar">${p.tipo==="cierre"?`<a class="btn sm" href="#/cerrar/${p.sesion.id}">Editar</a>`:`<a class="btn sm" href="#/f/${p.id}">Ver</a>`}<button class="btn sm dan" data-quitapend="${p.uid}">Quitar</button></div></div>`;
+    <div class="bar">${p.tipo==="cierre"?`<a class="btn sm" href="#/cerrar/${p.sesion.id}">Editar</a>`:p.tipo==="sesion"?`<a class="btn sm" href="#/ses/${p.id}">Ver</a>`:`<a class="btn sm" href="#/f/${p.id}">Ver</a>`}<button class="btn sm dan" data-quitapend="${p.uid}">Quitar</button></div></div>`;
   return `<h2 class="t">Enviar a Notion</h2>
-  <p class="note">Notion es la fuente de verdad. Lo que cierras o creas aquí se manda en un correo a ti mismo y la Rutina de boxeo lo pasa a Notion al día siguiente (los cierres a su Sesión, las fichas por el 📥 Inbox).</p>
+  <p class="note">Notion es la fuente de verdad. Lo que cierras o creas aquí se manda en un correo a ti mismo y la Rutina de boxeo lo pasa a Notion a las 14:00 (las clases preparadas y los cierres a 📅 Sesiones, las fichas por el 📥 Inbox). Una clase para hoy, mándala antes de esa hora.</p>
   ${!S.aj.correo?`<div class="err">Pon tu correo en <a href="#/ajustes">Ajustes</a> para poder enviar.</div>`:""}
   ${n?`<div class="list">${S.pend.map(fila).join("")}</div>
   <div class="bar" style="margin:14px 0"><button class="btn pri big" data-enviar="1"${S.aj.correo?"":" disabled"}>📧 Enviar ${n} por correo</button><button class="btn" data-copiar="1">Copiar</button></div>
   ${S.esperando?`<div class="ok">¿Se envió el correo? <button class="btn sm pri" data-enviado="1">Sí, enviado</button> <button class="btn sm" data-noenviado="1">No</button></div>`:""}`:
-  `<div class="empty"><b>Nada pendiente</b>Cuando cierres una clase o guardes una ficha aparecerá aquí.</div>`}
+  `<div class="empty"><b>Nada pendiente</b>Cuando prepares o cierres una clase o guardes una ficha aparecerá aquí.</div>`}
   ${S.enviados.length?`<h3 class="s">Enviados</h3><div class="list">${S.enviados.slice(-10).reverse().map(e=>`<div class="card"><span class="note">${esc(new Date(e.enviado).toLocaleString("es-ES",{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"}))} · ${e.envios.length} ${e.envios.length===1?"cambio":"cambios"}</span><span>${e.envios.map(p=>esc(p.tipo==="cierre"?p.sesion.titulo:p.titulo)).join(" · ")}</span></div>`).join("")}</div>`:""}`;
 }
 function enviar(){
@@ -910,6 +1168,8 @@ function importar(txt,sinc){
   // Lo ya enviado a Notion antes de este export ya está allí: se quita la copia local
   const envio=S.enviados.filter(e=>e.enviado<d.exportado).flatMap(e=>e.envios);
   for(const p of envio)if(p.tipo==="ficha")delete S.locales[p.id];
+  const enNotion=new Set((S.datos.sesiones||[]).filter(s=>s["Fecha"]&&!s["Plantilla"]).map(s=>s["Fecha"]));
+  for(const p of S.enviados.flatMap(e=>e.envios))if(p.tipo==="sesion"&&enNotion.has(p.fecha))delete S.locales[p.id];
   if(!LS.set("esq.datos",S.datos)){toast("No cabe en este móvil");return}
   guardar();reindexar();toast(sinc?"Datos actualizados ("+fechaCorta(d.exportado)+")":d.parcial?"Cambios importados":"Datos importados");render();
 }
@@ -944,6 +1204,22 @@ app.addEventListener("click",async ev=>{
   if(d.bloque){abrirClase([{id:d.bloque,fase:"Bloque suelto",min:null}],null);return}
   if(d.libre){abrirClase([{id:null,fase:"Temporizador",prog:LS.get("esq.libre",{modo:"intervalos",rondas:3,trabajo:180,descanso:60,rol:0})}],null);return}
   if(d.ejemplos){await cargarEjemplos();return}
+  if(d.dia){const n=+d.dia;S.dias=S.dias.includes(n)?S.dias.filter(x=>x!==n):[...S.dias,n];LS.set("esq.dias",S.dias);render();return}
+  if(d.calmas){S.calSem=(S.calSem||6)+6;render();return}
+  if(d.gen){S.genDia=d.gen;S.elegirDia=null;render();return}
+  if(d.genno){S.genInd=($("#g-ind")?.value||"");S.genDia=null;render();return}
+  if(d.gensi){const [p,pr]=planDe(d.gensi),ind=$("#g-ind").value.trim();S.genInd="";
+    if(!lista("bloques").length){toast("Primero hacen falta bloques en la biblioteca");return}
+    abrirBorrador(generarClase(d.gensi,pr,p,ind,+$("#g-min").value||80));toast("Propuesta lista: revísala y guárdala");return}
+  if(d.elegir){S.elegirDia=d.elegir;S.genDia=null;render();return}
+  if(d.elegirno){S.elegirDia=null;render();return}
+  if(d.copiarclase){const f=S.elegirDia,[p,pr]=planDe(f);abrirBorrador(copiarClase(f,pr,p,get(d.copiarclase)));return}
+  if(d.usar){const [p,pr]=planDe(d.usar);abrirBorrador(copiarClase(d.usar,pr,p,pr.plantilla));return}
+  if(d.otro){leerBorrador();const [i,j]=d.otro.split(":").map(Number);otroBloque(i,j);LS.set("esq.borrador",S.borr);render();return}
+  if(d.quitab){leerBorrador();const [i,j]=d.quitab.split(":").map(Number);S.borr.fases[i].bloques.splice(j,1);LS.set("esq.borrador",S.borr);render();return}
+  if(d.masb){leerBorrador();const fa=S.borr.fases[+d.masb],us=new Set(S.borr.fases.flatMap(f=>f.bloques.map(b=>b.id))),c=fa.cand.find(([id])=>!us.has(id));if(c)fa.bloques.push({id:c[0],porque:c[1]});LS.set("esq.borrador",S.borr);render();return}
+  if(d.guardarclase){guardarClase();return}
+  if(d.descartar){S.borr=null;LS.set("esq.borrador",null);ir("/clases");return}
   if(d.fil){const b=S.fil._base,F=S.fil[b];const a=F[d.fil]||[];F[d.fil]=a.includes(d.val)?a.filter(x=>x!==d.val):[...a,d.val];guardar();render();return}
   if(d.limpiar){S.fil[d.limpiar]={};guardar();render();return}
   if(d.estado){document.querySelectorAll("[data-estado]").forEach(b=>b.setAttribute("aria-pressed",b===t));$("#c-lugarw").style.display=d.estado==="Saltada"?"":"none";return}
@@ -954,7 +1230,7 @@ app.addEventListener("click",async ev=>{
   if(d.quita){leerEditor();for(const k of ["Ejercicios","Físico"])S.edit.v[k]=(S.edit.v[k]||[]).filter(x=>x!==d.quita);render();return}
   if(d.sube){leerEditor();const v=S.edit.v,ps=[...(v["Ejercicios"]||[]),...(v["Físico"]||[])],i=+d.sube;if(i>0){[ps[i-1],ps[i]]=[ps[i],ps[i-1]];v["Ejercicios"]=ps.filter(p=>baseDe(p)!=="fisico");v["Físico"]=ps.filter(p=>baseDe(p)==="fisico")}render();return}
   if(d.guardarficha){guardarFicha();return}
-  if(d.quitapend){const p=S.pend.find(p=>p.uid===d.quitapend);S.pend=S.pend.filter(p=>p.uid!==d.quitapend);if(p?.tipo==="ficha")delete S.locales[p.id];guardar();reindexar();render();return}
+  if(d.quitapend){const p=S.pend.find(p=>p.uid===d.quitapend);S.pend=S.pend.filter(p=>p.uid!==d.quitapend);if(p?.tipo==="ficha"||p?.tipo==="sesion")delete S.locales[p.id];guardar();reindexar();render();return}
   if(d.enviar){enviar();return}
   if(d.copiar){copiar();return}
   if(d.enviado){S.enviados.push({enviado:new Date().toISOString(),envios:S.pend});S.pend=[];S.esperando=false;guardar();render();toast("Hecho. La Rutina lo pasará a Notion");return}
@@ -975,6 +1251,8 @@ app.addEventListener("input",ev=>{
   if(ev.target.id==="q"){S.fil["q_"+S.fil._base]=ev.target.value;clearTimeout(S.qt);S.qt=setTimeout(()=>{const pos=ev.target.selectionStart;render();const q=$("#q");if(q){q.focus();try{q.setSelectionRange(pos,pos)}catch(e){}}},250)}
   if(ev.target.id==="e-buscap"){S.edit.qp=ev.target.value;$("#e-pick").innerHTML=pickPiezas(S.edit)}
 });
+app.addEventListener("change",ev=>{if(ev.target.classList.contains("b-min")){leerBorrador();render()}});
+app.addEventListener("input",ev=>{if(/^b-/.test(ev.target.id))leerBorrador()});
 app.addEventListener("change",async ev=>{if(ev.target.id==="importar"&&ev.target.files[0]){importar(await ev.target.files[0].text());ev.target.value=""}});
 window.addEventListener("hashchange",()=>{const r=ruta();if(r.v!=="nuevo"&&r.v!=="editar")S.edit=null});
 

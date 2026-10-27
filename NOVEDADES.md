@@ -2,6 +2,11 @@
 
 La versión en uso sale en la cabecera de la app y en Ajustes.
 
+## 1.2 · 27-oct-2026
+- Nueva pestaña «Clases»: tus días de clase en un calendario, semana a semana, con lo que toca del plan.
+- En cada día: «Del plan» (su plantilla), «Generar» (una propuesta con tus bloques según la semana del plan, la última clase y tus indicaciones) o «Elegir» (copiar otra clase).
+- Revisas la clase antes de guardarla: cambia cualquier bloque con ↻, los minutos y el objetivo. Se manda a Notion desde «Enviar».
+
 ## 1.1 · 22-oct-2026
 - Se actualiza sola: con tu contraseña (Ajustes → Sincronización) descarga tus datos cifrados al abrirla, en el móvil y en el PC.
 - El botón «Actualizar ahora» para traer lo último en cualquier momento.
