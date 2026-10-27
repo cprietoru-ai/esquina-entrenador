@@ -116,6 +116,10 @@ label.f .req{color:var(--rojo)}
 .ab .a{background:var(--rojo)}.ab .b{background:var(--azul)}
 .ab b{font-family:var(--display);font-size:22px;font-weight:400;letter-spacing:1px;display:block}
 .toast{max-width:min(92vw,520px);text-align:center;position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:999px;font-weight:600;z-index:60}
+.crumb{font-size:13px;color:var(--muted);margin:2px 0 4px}.crumb a{color:var(--rojo);text-decoration:none;font-weight:600}
+a.card.fila{flex-direction:row;align-items:center;gap:10px}
+.fila .dm{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.cnt2{font-family:var(--display);font-size:26px;line-height:1;color:var(--rojo);min-width:36px;text-align:right}.cnt2.cero{color:var(--muted)}
 .semcab{font-family:var(--label);font-weight:700;font-size:14px;letter-spacing:.8px;color:var(--muted);margin:14px 0 2px}
 .semcab b{color:var(--ink)}
 .card.dia{flex-direction:row;align-items:center;gap:12px}
@@ -171,8 +175,12 @@ label.f .req{color:var(--rojo)}
 <script>
 "use strict";
 // ---------- Versión y novedades (la más nueva arriba) ----------
-const VERSION="1.2";
+const VERSION="1.3";
 const NOVEDADES=[
+  ["1.3","27-oct-2026",["Biblioteca nueva: se entra por las fases de la clase (calentamiento, físico, técnica, saco, sparring y vuelta a la calma) y por nivel.",
+    "Cada bloque dice en qué sesiones y planes se usa, y arriba tienes la ruta para volver (Biblioteca › Fase › Bloque › Ejercicio).",
+    "Ejercicios por fundamento, buscador en toda la biblioteca y un apartado «Por ordenar» con lo que no llega a ninguna clase.",
+    "Clases: técnica, saco y sparring son intercambiables (quita o añade fases al revisar), y el calentamiento y la vuelta a la calma rotan."]],
   ["1.2","27-oct-2026",["Nueva pestaña «Clases»: tus días de clase en un calendario, semana a semana, con lo que toca del plan.",
     "En cada día: «Del plan» (su plantilla), «Generar» (una propuesta con tus bloques según la semana del plan, la última clase y tus indicaciones) o «Elegir» (copiar otra clase).",
     "Revisas la clase antes de guardarla: cambia cualquier bloque con ↻, los minutos y el objetivo. Se manda a Notion desde «Enviar»."]],
@@ -294,7 +302,7 @@ function tabs(){
 function render(){
   tabs();
   const {v,a}=ruta();
-  const V={hoy:vHoy,clases:vClases,borrador:vBorrador,planes:vPlanes,plan:()=>vPlan(a[0]),ses:()=>vSesion(a[0]),bib:()=>vBib(a[0]||S.fil._base||"ejercicios"),
+  const V={hoy:vHoy,clases:vClases,borrador:vBorrador,planes:vPlanes,plan:()=>vPlan(a[0]),ses:()=>vSesion(a[0]),bib:()=>a[0]==="fase"?vFase(a[1]):a[0]==="fund"?vPorFund():a[0]==="ordenar"?vOrdenar():a[0]?vBib(a[0]):vBibInicio(),
     f:()=>vFicha(a[0]),nuevo:()=>vEditor(a[0],null),editar:()=>vEditor(baseDe(a[0]),a[0]),cerrar:()=>vCerrar(a[0]),enviar:vEnviar,ajustes:vAjustes}[v]||vHoy;
   app.innerHTML=V();
   if(v!=="bib")window.scrollTo(0,0);
@@ -524,17 +532,20 @@ function htmlElegir(f,pr,p){
     <div class="bar" style="margin-top:8px"><button class="btn sm" data-elegirno="1">Cancelar</button></div></div>`;
 }
 // ----- Generar: el esqueleto del grupo (criterio-fichas-boxeo) relleno con tus bloques -----
-const FASES=[["Calentamiento",15,1],["Físico",25,1],["Parejas y manoplas",25,2],["Saco",10,1],["Vuelta a la calma",5,1]];
+// Fijas: calentamiento, físico y vuelta a la calma (comunes a todos los niveles, rotan para no repetir).
+// La parte de boxeo son piezas intercambiables: técnica, saco y sparring; cada clase lleva las que tocan.
+const FASES=[["Calentamiento",15,1,1],["Físico",25,1,1],["Técnica",25,2,0],["Saco",10,1,0],["Sparring",10,1,0],["Vuelta a la calma",5,1,1]];
 function faseDe(b){const F=b["Formato"]||[],h=x=>F.includes(x),o=[];
   if(h("Calentamiento"))return ["Calentamiento"];
   if(h("Vuelta a la calma")&&!h("Físico"))return ["Vuelta a la calma"];
   if(h("Físico"))return ["Físico"];
-  if(h("Pareja")||h("Manoplas")||h("Sparring")||h("Sombra"))o.push("Parejas y manoplas");
+  if(h("Sparring"))return ["Sparring"];
+  if(h("Pareja")||h("Manoplas")||h("Sombra"))o.push("Técnica");
   if(h("Saco"))o.push("Saco");
   if(h("Circuito")&&!o.length)o.push("Físico");
   return o;
 }
-const VACIAS=new Set("repaso nada poca poco mucha mucho gente hoy para como sobre entre desde hasta donde cuando cada todo toda todos todas semana semanas clase clases grupo intermedio avanzado iniciacion basico tambien solo sola pero esta este estos estas hacer hace sale salga sesion bloque bloques primer primera segundo minutos golpes golpe trabajo trabajar".split(" "));
+const VACIAS=new Set("segun tecnico tecnica suave primer primero repaso nada poca poco mucha mucho gente hoy para como sobre entre desde hasta donde cuando cada todo toda todos todas semana semanas clase clases grupo intermedio avanzado iniciacion basico tambien solo sola pero esta este estos estas hacer hace sale salga sesion bloque bloques primer primera segundo minutos golpes golpe trabajo trabajar".split(" "));
 function claves(t){t=norm(t).replace(/\b(nada de|sin|no)\s+[a-zñ]+/g," ");const out=new Map();
   for(const w of [...(t.match(/\d(?:-\d)+/g)||[]),...t.split(/[^a-zñ0-9-]+/).filter(w=>w.length>3&&!VACIAS.has(w)&&!/^\d/.test(w))]){const k=w.length>6?w.slice(0,6):w;if(!out.has(k))out.set(k,w)}
   return [...out].map(([k,w])=>({k,w}))}
@@ -543,15 +554,17 @@ const NIV={"Básico":0,"Iniciación":0,"Intermedio":1,"Avanzado":2};
 function generarClase(f,pr,p,ind,min){
   const tramo=pr?.tramo,ref=pr?.ref,ul=ultimaClase(p),prox=paraLaProxima(ul);
   const kT=claves([tramo?.tema,tramo?.detalle].join(" ")),kI=claves(ind),kP=claves(prox);
-  const sparring=/sparring/.test(norm([tramo?.detalle,ind].join(" ")))&&!/(sin|nada de|no)\s+sparring/.test(norm(ind));
+  const sparring=/sparring/.test(norm([tramo?.tema,tramo?.detalle,ind].join(" ")))&&!/(sin|nada de|no)\s+sparring/.test(norm(ind));
   const tipoPide=t=>{const x=norm([tramo?.tema,tramo?.detalle,ind].join(" "));return (t==="Contraataque"&&/contra/.test(x))||(t==="Defensa"&&/defens|esquiv|bloque/.test(x))||(t==="Técnica"&&/combina|tecnic/.test(x))};
   const nivP=NIV[p?.["Nivel"]]??1;
-  const recientes=(p?sesDePlan(p):lista("sesiones")).filter(s=>s["Fecha"]&&s["Fecha"]<f&&!s["Plantilla"]).sort((a,b)=>b["Fecha"].localeCompare(a["Fecha"])).slice(0,3);
+  // Lo dado en las dos semanas anteriores a esa clase (para rotar y no repetir)
+  const hace14=(()=>{const d=new Date(f+"T12:00:00");d.setDate(d.getDate()-14);return isoDe(d)})();
+  const recientes=(p?sesDePlan(p):lista("sesiones")).filter(s=>s["Fecha"]&&s["Fecha"]<f&&s["Fecha"]>=hace14&&!s["Plantilla"]).sort((a,b)=>b["Fecha"].localeCompare(a["Fecha"])).slice(0,3);
   const usado=id=>recientes.findIndex(s=>(s["Bloques"]||[]).includes(id)||(s.cuerpo||"").includes("#"+id));
   const refIds=new Set(ref?[...(ref["Bloques"]||[]),...[...(ref.cuerpo||"").matchAll(/\]\(#([0-9a-f]{32})\)/g)].map(m=>m[1])]:[]);
   const nota=(b,fase)=>{const t=textoBloque(b),why=[];let n=Math.random()*.8;
     // Las palabras del tramo y de tus indicaciones eligen la técnica (parejas y saco), no el físico ni el calentamiento
-    const tec=fase==="Parejas y manoplas"||fase==="Saco",m=ks=>tec?ks.filter(o=>t.includes(o.k)):[];
+    const tec=fase==="Técnica"||fase==="Saco"||fase==="Sparring",m=ks=>tec?ks.filter(o=>t.includes(o.k)):[];
     const hT=m(kT),hI=m(kI),hP=m(kP);
     n+=hT.length*3+hI.length*5+hP.length*2;
     if(hI.length)why.push("lo que pides: "+hI.slice(0,2).map(o=>o.w).join(", "));
@@ -559,15 +572,17 @@ function generarClase(f,pr,p,ind,min){
     if(hP.length)why.push("lo que pidió la última clase");
     if(refIds.has(b.id)){n+=6;why.unshift("está en la referencia del tramo")}
     if(tec&&tipoPide(b["Tipo"])){n+=3;if(!why.length)why.push(b["Tipo"].toLowerCase()+", como pide el tramo")}
-    const nb=NIV[b["Nivel"]]??0;if(nb>nivP)n-=4;if(nb===nivP)n+=1;
-    if((b["Formato"]||[]).includes("Sparring")&&!sparring)n-=20;
+    // Un tramo que ya sube de nivel («Intermedio → Avanzado») admite bloques del siguiente
+    const nb=NIV[b["Nivel"]]??0,sube=/→\s*avanzado/.test(norm(tramo?.linea))&&nb===nivP+1;if(nb>nivP)n-=sube?1:4;if(nb===nivP)n+=1;
     const u=usado(b.id),fija=fase==="Calentamiento"||fase==="Vuelta a la calma";
-    if(u>=0)n-=fija?1:(fase==="Físico"?6:4)-u;
+    if(u>=0)n-=(fija?5:fase==="Físico"?6:4)-u;
+    if(fija&&u<0&&recientes.length)why.push("rota: no salió en las últimas clases");
     if(fase==="Físico"){if(/autocarga|tier\s*\d/i.test(b.titulo))n-=8;if(/grupo/i.test(b.titulo))n+=3;if(u<0){n+=2;why.push("rota el físico de grupo: no salió en las últimas clases")}}
     if(!why.length)why.push(fase==="Calentamiento"?"para entrar en calor":fase==="Vuelta a la calma"?"para bajar pulsaciones y estirar":"completa la fase");
     return {n,why:why[0]}};
-  const total=FASES.reduce((a,x)=>a+x[1],0),k=(min||total)/total;
-  const fases=FASES.map(([nombre,m,cuantos])=>{
+  const usar=FASES.filter(([nombre])=>nombre!=="Sparring"||sparring);
+  const total=usar.reduce((a,x)=>a+x[1],0),k=(min||total)/total;
+  const fases=usar.map(([nombre,m,cuantos])=>{
     const cand=lista("bloques").filter(b=>faseDe(b).includes(nombre)).map(b=>({id:b.id,...nota(b,nombre)})).sort((a,b)=>b.n-a.n);
     return {nombre,min:Math.max(5,Math.round(m*k/5)*5),cand:cand.map(c=>[c.id,c.why]),bloques:cand.slice(0,cuantos).map(c=>({id:c.id,porque:c.why}))};
   }).filter(x=>x.cand.length);
@@ -602,7 +617,7 @@ function fasesDe(s){const out=[];let fa=null;
   return conB;
 }
 // El nombre de fase de una sesión copiada, en el esqueleto del grupo (para ↻ y «Añadir otro»)
-function faseCanon(n){n=norm(n);return /calent/.test(n)?"Calentamiento":/calma|estira/.test(n)?"Vuelta a la calma":/fisic|fuerza|circuit/.test(n)?"Físico":/saco/.test(n)?"Saco":/parej|manopl|sparr|sombra|tecnic|boxeo|contra|defens/.test(n)?"Parejas y manoplas":null}
+function faseCanon(n){n=norm(n);return /calent/.test(n)?"Calentamiento":/calma|estira/.test(n)?"Vuelta a la calma":/fisic|fuerza|circuit/.test(n)?"Físico":/sparr/.test(n)?"Sparring":/saco/.test(n)?"Saco":/parej|manopl|sombra|tecnic|boxeo|contra|defens/.test(n)?"Técnica":null}
 function copiarClase(f,pr,p,s){
   const tema=(s.titulo.split(":").slice(1).join(":").trim())||s.titulo;
   return borradorBase(f,pr,p,{origen:s["Plantilla"]?"plantilla":"copia",tema,base:s["Plantilla"]?s.id:null,copiaDe:s.id,
@@ -625,7 +640,9 @@ function vBorrador(){
   <h3 class="s">Estructura · ${tot} min</h3>
   <div class="list">${B.fases.map((fa,i)=>`<div class="card"><div class="bar" style="justify-content:space-between"><b>${i+1}. ${esc(fa.nombre)}</b><span class="bar"><input type="number" class="b-min" data-fi="${i}" value="${esc(fa.min??"")}" min="0" max="90" step="5" style="width:80px"> <span class="note">min</span></span></div>
     ${fa.bloques.map((b,j)=>`<div class="bq"><div class="dm"><a class="int" href="#/f/${b.id}">${esc(titulo(b.id))}</a>${b.porque?`<div class="note">${esc(b.porque)}</div>`:""}</div><span class="acts">${fa.cand.length>1?`<button class="btn sm" data-otro="${i}:${j}" title="Otro bloque" aria-label="Cambiar por otro bloque">↻</button>`:""}<button class="btn sm" data-quitab="${i}:${j}" aria-label="Quitar">✕</button></span></div>`).join("")}
-    ${fa.cand.length>fa.bloques.length?`<button class="btn sm" data-masb="${i}">+ Añadir otro</button>`:""}</div>`).join("")}</div>
+    <div class="bar">${fa.cand.length>fa.bloques.length?`<button class="btn sm" data-masb="${i}">+ Añadir otro</button>`:""}${FASES.some(x=>x[0]===faseCanon(fa.nombre)&&!x[3])?`<button class="btn sm dan" data-quitafase="${i}">Quitar esta fase</button>`:""}</div></div>`).join("")}</div>
+  ${(()=>{const hay=new Set(B.fases.map(f=>faseCanon(f.nombre)));const f=FASES.filter(x=>!x[3]&&!hay.has(x[0])&&lista("bloques").some(b=>faseDe(b).includes(x[0])));
+    return f.length?`<div class="bar" style="margin-top:8px"><span class="note">Añadir a la parte de boxeo:</span>${f.map(x=>`<button class="btn sm" data-anadefase="${x[0]}">+ ${x[0]}</button>`).join("")}</div>`:""})()}
   ${B.prox?`<div class="vig"><b>La última clase pidió</b>${esc(B.prox)}</div>`:""}
   <div class="bar" style="margin:14px 0"><button class="btn pri big" data-guardarclase="1">Guardar la clase</button><button class="btn dan" data-descartar="1">Descartar</button></div>`;
 }
@@ -665,7 +682,84 @@ function guardarClase(){
   S.borr=null;LS.set("esq.borrador",null);guardar();reindexar();toast("Clase guardada. Mándala a Notion desde Enviar");ir("/ses/"+id);
 }
 
-// ---------- Biblioteca con filtros ----------
+// ---------- Biblioteca por la jerarquía (1.3): fases de la clase y nivel ----------
+// Plan › Sesión › Bloque › Ejercicio/Físico › Fundamento, como en Notion. Se entra por las fases de la
+// sesión; Ejercicios, Físico, Fundamentos y Correcciones quedan de consulta.
+const NIVELES=[["Básico","Iniciación"],["Intermedio","Intermedio"],["Avanzado","Avanzado"]];
+const COMUNES=new Set(["Calentamiento","Vuelta a la calma"]); // comunes a todos los niveles
+function nivelBib(){if(S.fil._nivel!==undefined)return S.fil._nivel;const g=lista("planes").filter(esGrupo);return g.length===1?(g[0]["Nivel"]||""):""}
+const deNivel=(x,n)=>!n||!x["Nivel"]||x["Nivel"]===n;
+const bloquesFase=(f,n)=>lista("bloques").filter(b=>faseDe(b).includes(f)&&(COMUNES.has(f)||deNivel(b,n)));
+const usosDe=id=>lista("sesiones").filter(s=>(s["Bloques"]||[]).includes(id)||(s.cuerpo||"").includes("#"+id));
+const chipsNivel=n=>`<div class="chiprow">${[["","Todos"],...NIVELES].map(([v,t])=>`<button class="chip" data-nivel="${v}" aria-pressed="${n===v}">${t}</button>`).join("")}</div>`;
+function porOrdenar(){
+  const enBloque=new Set(lista("bloques").flatMap(b=>[...(b["Ejercicios"]||[]),...(b["Físico"]||[])]));
+  return {ej:lista("ejercicios").filter(e=>!enBloque.has(e.id)),vacios:lista("bloques").filter(b=>!(b["Ejercicios"]||[]).length&&!(b["Físico"]||[]).length)};
+}
+function vBibInicio(){
+  if(!S.datos)return vSinDatos();
+  const n=nivelBib(),q=S.fil.q_todo||"";
+  if(q){const nq=norm(q),r=["bloques","ejercicios","fisico","fundamentos","correcciones"].flatMap(b=>lista(b).filter(x=>norm([x.titulo,x["Notación"],x["Descripción"],x["Desarrollo"],x["Detalle"]].join(" ")).includes(nq)).map(x=>[b,x]));
+    return `<h2 class="t">Biblioteca</h2><div class="bar"><input type="search" id="qt" placeholder="Buscar en toda la biblioteca…" value="${esc(q)}" style="flex:1;min-width:0"></div>
+    <p class="note">${r.length} resultados</p><div class="grid">${r.slice(0,80).map(([b,x])=>tarjetaFicha(b,x)).join("")||`<div class="empty"><b>Nada</b>Prueba con otra palabra.</div>`}</div>`}
+  const o=porOrdenar();
+  const fila=(href,t,num,sub="")=>`<a class="card fila" href="${href}"><span class="dm"><b>${esc(t)}</b>${sub?`<span class="note">${esc(sub)}</span>`:""}</span><span class="cnt2${num?"":" cero"}">${num}</span></a>`;
+  return `<h2 class="t">Biblioteca</h2>
+  <div class="bar"><input type="search" id="qt" placeholder="Buscar en toda la biblioteca…" value="" style="flex:1;min-width:0"><a class="btn pri" href="#/nuevo/bloques">+ Bloque</a></div>
+  <h3 class="s">Nivel</h3>${chipsNivel(n)}
+  <h3 class="s">Bloques por fase de la clase</h3>
+  <div class="list">${FASES.map(([f,,,fija])=>fila(`#/bib/fase/${encodeURIComponent(f)}`,f,bloquesFase(f,n).length,COMUNES.has(f)?"comunes a todos los niveles; rotan":fija?"fija en cada clase; rota":"intercambiable: la clase lleva las que tocan")).join("")}</div>
+  <h3 class="s">Consulta</h3>
+  <div class="list">${fila("#/bib/fund","Ejercicios por fundamento",lista("ejercicios").filter(e=>deNivel(e,n)).length,"golpes, defensas, movimiento y guardia")}
+  ${fila("#/bib/fisico","Físico",lista("fisico").length,"por patrón de movimiento y zona")}
+  ${fila("#/bib/correcciones","Correcciones",lista("correcciones").length,"errores típicos y cómo corregirlos")}
+  ${fila("#/bib/fundamentos","Fundamentos",lista("fundamentos").length,"el vocabulario")}
+  ${fila("#/bib/ordenar","Por ordenar",o.ej.length+o.vacios.length,"ejercicios sin bloque y huecos")}</div>
+  <p class="note" style="margin-top:10px">Listas completas con filtros: ${Object.entries(BIB).map(([k,c])=>`<a href="#/bib/${k}">${c.nombre}</a>`).join(" · ")}</p>`;
+}
+function vFase(f){
+  if(!S.datos)return vSinDatos();
+  const n=nivelBib(),xs=bloquesFase(f,n).sort((a,b)=>(NIV[a["Nivel"]]??0)-(NIV[b["Nivel"]]??0)||a.titulo.localeCompare(b.titulo,"es"));
+  return `<div class="crumb"><a href="#/bib">Biblioteca</a> › ${esc(f)}</div><h2 class="t">${esc(f)}</h2>
+  ${COMUNES.has(f)?`<p class="note">Comunes a todos los niveles. «Generar» rota entre ellos para no repetir siempre lo mismo.</p>`:chipsNivel(n)}
+  <p class="note">${xs.length} bloques${!COMUNES.has(f)&&n?` de ${esc((NIVELES.find(x=>x[0]===n)||[,n])[1])}`:""}</p>
+  <div class="grid">${xs.map(b=>{const u=usosDe(b.id).length;return tarjetaFicha("bloques",b,u?`<span>· en ${u} ${u===1?"sesión":"sesiones"}</span>`:"")}).join("")||`<div class="empty"><b>No hay bloques de esta fase${n?" para este nivel":""}</b>Cámbialo de nivel o crea uno con «+ Bloque».</div>`}</div>
+  <div class="bar" style="margin-top:12px"><a class="btn pri" href="#/nuevo/bloques">+ Bloque</a></div>`;
+}
+function vPorFund(){
+  if(!S.datos)return vSinDatos();
+  const n=nivelBib(),cats=opc("fundamentos","Categoría");
+  const grupos=[...cats,""].map(c=>[c,lista("fundamentos").filter(f=>(f["Categoría"]||"")===c)]).filter(([,fs])=>fs.length);
+  return `<div class="crumb"><a href="#/bib">Biblioteca</a> › Ejercicios por fundamento</div><h2 class="t">Ejercicios por fundamento</h2>${chipsNivel(n)}
+  ${grupos.map(([c,fs])=>`<h3 class="s">${esc(c||"Otros")}</h3><div class="list">${fs.sort((a,b)=>a.titulo.localeCompare(b.titulo,"es")).map(f=>{const ej=refsA("ejercicios","Fundamentos",f.id).filter(e=>deNivel(e,n));
+    return `<details class="fil"><summary>${esc(f.titulo)} <span class="note">· ${ej.length}</span></summary><p class="note"><a href="#/f/${f.id}">Ver el fundamento</a></p><div class="list">${ej.map(e=>tarjetaFicha("ejercicios",e)).join("")||'<span class="note">Ningún ejercicio de este nivel.</span>'}</div></details>`}).join("")}</div>`).join("")}`;
+}
+function vOrdenar(){
+  if(!S.datos)return vSinDatos();
+  const o=porOrdenar(),huecos=[];
+  for(const [nv,t] of NIVELES)for(const [f,,,fija] of FASES)if(!COMUNES.has(f)&&!bloquesFase(f,nv).length)huecos.push(`${f} · ${t}`);
+  return `<div class="crumb"><a href="#/bib">Biblioteca</a> › Por ordenar</div><h2 class="t">Por ordenar</h2>
+  <p class="note">Lo que no llega a ninguna clase. Un ejercicio entra en un bloque solo cuando hay un criterio que lo una con otros, no por agruparlo.</p>
+  ${huecos.length?`<h3 class="s">Fases sin bloques</h3><div class="chiprow">${huecos.map(h=>`<span class="chip">${esc(h)}</span>`).join("")}</div>`:""}
+  <h3 class="s">Ejercicios sin bloque (${o.ej.length})</h3><div class="grid">${o.ej.sort((a,b)=>a.titulo.localeCompare(b.titulo,"es")).map(e=>tarjetaFicha("ejercicios",e)).join("")||'<span class="note">Ninguno.</span>'}</div>
+  <h3 class="s">Bloques sin piezas (${o.vacios.length})</h3><p class="note">Normalmente son reglas de formato (sparring, juegos): está bien si es así.</p><div class="grid">${o.vacios.map(b=>tarjetaFicha("bloques",b)).join("")}</div>`;
+}
+// Dónde está una ficha en la jerarquía, para la ruta de arriba
+function migas(base,x){
+  if(base==="bloques"){const f=faseDe(x)[0];return `<div class="crumb"><a href="#/bib">Biblioteca</a>${f?` › <a href="#/bib/fase/${encodeURIComponent(f)}">${esc(f)}</a>`:""} › Bloque</div>`}
+  if(base==="ejercicios"){const b=refsA("bloques","Ejercicios",x.id)[0];return `<div class="crumb"><a href="#/bib">Biblioteca</a>${b?` › <a href="#/f/${b.id}">${esc(b.titulo)}</a>`:` › <a href="#/bib/fund">Ejercicios</a>`} › Ejercicio</div>`}
+  if(base==="fisico"){const b=refsA("bloques","Físico",x.id)[0];return `<div class="crumb"><a href="#/bib">Biblioteca</a>${b?` › <a href="#/f/${b.id}">${esc(b.titulo)}</a>`:` › <a href="#/bib/fisico">Físico</a>`} › Físico</div>`}
+  return `<div class="crumb"><a href="#/bib">Biblioteca</a> › ${esc(BIB[base]?.nombre||"")}</div>`;
+}
+function seUsaEn(id){
+  const us=usosDe(id);if(!us.length)return `<h3 class="s">Se usa en</h3><p class="note">Todavía en ninguna sesión.</p>`;
+  const planes=[...new Set(us.flatMap(s=>s["Plan"]||[]))].map(get).filter(Boolean);
+  const ord=us.sort((a,b)=>(b["Fecha"]||"").localeCompare(a["Fecha"]||""));
+  return `<h3 class="s">Se usa en ${us.length} ${us.length===1?"sesión":"sesiones"}</h3>${planes.length?`<p class="note">Planes: ${planes.map(p=>`<a href="#/plan/${p.id}">${esc(p.titulo)}</a>`).join(" · ")}</p>`:""}
+  <div class="list">${ord.slice(0,8).map(s=>`<a class="card fila" href="#/ses/${s.id}"><span class="dm"><b>${esc(s.titulo)}</b></span><span class="note">${s["Fecha"]?esc(fechaCorta(s["Fecha"])):"plantilla"}</span></a>`).join("")}</div>`;
+}
+
+// ---------- Biblioteca: listas completas con filtros ----------
 function vBib(base){
   if(!BIB[base])base="ejercicios";
   if(!S.datos)return vSinDatos();
@@ -684,13 +778,13 @@ function vBib(base){
   }).join("");
   const nAct=activos.reduce((n,[,v])=>n+v.length,0);
   const puede=base==="ejercicios"||base==="bloques";
-  return `<div class="seg" role="tablist">${Object.entries(BIB).map(([k,c])=>`<a class="chip" role="tab" href="#/bib/${k}" aria-pressed="${k===base}">${c.nombre} <span class="note">${lista(k).length}</span></a>`).join("")}</div>
+  return `<div class="crumb"><a href="#/bib">Biblioteca</a> › ${esc(cfg.nombre)}</div><div class="seg" role="tablist">${Object.entries(BIB).map(([k,c])=>`<a class="chip" role="tab" href="#/bib/${k}" aria-pressed="${k===base}">${c.nombre} <span class="note">${lista(k).length}</span></a>`).join("")}</div>
   <div class="bar" style="margin-top:10px"><input type="search" id="q" placeholder="Buscar en ${cfg.nombre.toLowerCase()}…" value="${esc(q)}" style="flex:1;min-width:0">${puede?`<a class="btn pri" href="#/nuevo/${base}">+ Nuevo</a>`:""}</div>
   <details class="fil"${nAct?" open":""}><summary>Filtros${nAct?` (${nAct})`:""}</summary>${grupos}${nAct?`<button class="btn sm dan" data-limpiar="${base}">Quitar filtros</button>`:""}</details>
   <p class="note">${xs.length} de ${lista(base).length}</p>
   <div class="grid" id="res">${xs.map(x=>tarjetaFicha(base,x)).join("")||`<div class="empty"><b>Nada con esos filtros</b>Quita alguno.</div>`}</div>`;
 }
-function tarjetaFicha(base,x){
+function tarjetaFicha(base,x,extra=""){
   const m=[];
   if(base==="ejercicios")m.push(tags(x["Nivel"]),tags(x["Tipo"]),tags(x["Se trabaja en"]));
   if(base==="fisico")m.push(tags(x["Categoría"]),tags(x["Patrón de movimiento"]),tags(x["Nivel"]));
@@ -700,7 +794,7 @@ function tarjetaFicha(base,x){
   const sub=base==="ejercicios"&&x["Notación"]&&norm(x["Notación"])!==norm(x.titulo)?`<div class="not">${esc(x["Notación"])}</div>`:
     base==="fundamentos"?`<div class="note">${esc(x["Descripción"]||"")}</div>`:base==="correcciones"?`<div class="note">${esc(x["Detalle"]||"")}</div>`:
     base==="fisico"?`<div class="note">${esc(x["Series/Reps o Duración"]||"")}</div>`:"";
-  return `<a class="card" href="#/f/${x.id}"><h3>${esc(x.titulo)}</h3>${sub}<div class="meta">${m.join("")}</div></a>`;
+  return `<a class="card" href="#/f/${x.id}"><h3>${esc(x.titulo)}</h3>${sub}<div class="meta">${m.join("")}${extra}</div></a>`;
 }
 function vFicha(id){
   const x=get(id),base=baseDe(id);if(!x)return noEsta();
@@ -719,8 +813,9 @@ function vFicha(id){
   if(base==="ejercicios"){const co=[...new Set([...(x["Correcciones"]||[]),...refsA("correcciones","Ejercicios relacionados",id).map(c=>c.id)])];
     inversas=co.length?`<h3 class="s">Correcciones</h3><div class="list">${co.map(c=>get(c)).filter(Boolean).map(c=>`<a class="card" href="#/f/${c.id}"><b>${esc(c.titulo)}</b><span class="note">${esc(c["Detalle"]||"")}</span></a>`).join("")}</div>`:""}
   if(base==="ejercicios"||base==="fisico"){const bl=refsA("bloques",base==="fisico"?"Físico":"Ejercicios",id);
-    if(bl.length&&!(x["🔁 Bloques"]||[]).length)inversas+=`<h3 class="s">Bloques que lo usan</h3><div class="rels">${enlaces(bl.map(b=>b.id))}</div>`}
-  return `<button class="back" onclick="history.back()">← Atrás</button>
+    if(bl.length&&!(x["🔁 Bloques"]||[]).length)inversas+=`<h3 class="s">Está en los bloques</h3><div class="rels">${enlaces(bl.map(b=>b.id))}</div>`}
+  if(base==="bloques")inversas+=seUsaEn(id);
+  return `${migas(base,x)}
   <h2 class="t">${esc(x.titulo)}</h2>
   ${x._local?`<div class="banner">Ficha ${x._local==="nuevo"?"nueva":"editada"} en este móvil: aún no está en Notion. Mándala desde <a href="#/enviar">Enviar</a>.</div>`:""}
   ${base==="ejercicios"&&x["Notación"]?`<div class="not" style="font-size:17px;padding:8px 10px">${esc(x["Notación"])}</div>`:""}
@@ -1204,6 +1299,7 @@ app.addEventListener("click",async ev=>{
   if(d.bloque){abrirClase([{id:d.bloque,fase:"Bloque suelto",min:null}],null);return}
   if(d.libre){abrirClase([{id:null,fase:"Temporizador",prog:LS.get("esq.libre",{modo:"intervalos",rondas:3,trabajo:180,descanso:60,rol:0})}],null);return}
   if(d.ejemplos){await cargarEjemplos();return}
+  if(d.nivel!==undefined){S.fil._nivel=d.nivel;guardar();render();return}
   if(d.dia){const n=+d.dia;S.dias=S.dias.includes(n)?S.dias.filter(x=>x!==n):[...S.dias,n];LS.set("esq.dias",S.dias);render();return}
   if(d.calmas){S.calSem=(S.calSem||6)+6;render();return}
   if(d.gen){S.genDia=d.gen;S.elegirDia=null;render();return}
@@ -1218,6 +1314,11 @@ app.addEventListener("click",async ev=>{
   if(d.otro){leerBorrador();const [i,j]=d.otro.split(":").map(Number);otroBloque(i,j);LS.set("esq.borrador",S.borr);render();return}
   if(d.quitab){leerBorrador();const [i,j]=d.quitab.split(":").map(Number);S.borr.fases[i].bloques.splice(j,1);LS.set("esq.borrador",S.borr);render();return}
   if(d.masb){leerBorrador();const fa=S.borr.fases[+d.masb],us=new Set(S.borr.fases.flatMap(f=>f.bloques.map(b=>b.id))),c=fa.cand.find(([id])=>!us.has(id));if(c)fa.bloques.push({id:c[0],porque:c[1]});LS.set("esq.borrador",S.borr);render();return}
+  if(d.quitafase){leerBorrador();S.borr.fases.splice(+d.quitafase,1);LS.set("esq.borrador",S.borr);render();return}
+  if(d.anadefase){leerBorrador();const F=FASES.find(x=>x[0]===d.anadefase),us=new Set(S.borr.fases.flatMap(f=>f.bloques.map(b=>b.id)));
+    const cand=lista("bloques").filter(b=>faseDe(b).includes(F[0])).sort((a,b)=>Math.abs((NIV[a["Nivel"]]??0)-(NIV[get(S.borr.plan)?.["Nivel"]]??1))-Math.abs((NIV[b["Nivel"]]??0)-(NIV[get(S.borr.plan)?.["Nivel"]]??1))).map(b=>[b.id,""]);
+    const c=cand.find(([id])=>!us.has(id)),fa={nombre:F[0],min:F[1],cand,bloques:c?[{id:c[0],porque:""}]:[]};
+    const iv=S.borr.fases.findIndex(f=>faseCanon(f.nombre)==="Vuelta a la calma");S.borr.fases.splice(iv<0?S.borr.fases.length:iv,0,fa);LS.set("esq.borrador",S.borr);render();return}
   if(d.guardarclase){guardarClase();return}
   if(d.descartar){S.borr=null;LS.set("esq.borrador",null);ir("/clases");return}
   if(d.fil){const b=S.fil._base,F=S.fil[b];const a=F[d.fil]||[];F[d.fil]=a.includes(d.val)?a.filter(x=>x!==d.val):[...a,d.val];guardar();render();return}
@@ -1252,7 +1353,8 @@ app.addEventListener("input",ev=>{
   if(ev.target.id==="e-buscap"){S.edit.qp=ev.target.value;$("#e-pick").innerHTML=pickPiezas(S.edit)}
 });
 app.addEventListener("change",ev=>{if(ev.target.classList.contains("b-min")){leerBorrador();render()}});
-app.addEventListener("input",ev=>{if(/^b-/.test(ev.target.id))leerBorrador()});
+app.addEventListener("input",ev=>{if(/^b-/.test(ev.target.id))leerBorrador();
+  if(ev.target.id==="qt"){S.fil.q_todo=ev.target.value;clearTimeout(S.qt);S.qt=setTimeout(()=>{const pos=ev.target.selectionStart;render();const q=$("#qt");if(q){q.focus();try{q.setSelectionRange(pos,pos)}catch(e){}}},250)}});
 app.addEventListener("change",async ev=>{if(ev.target.id==="importar"&&ev.target.files[0]){importar(await ev.target.files[0].text());ev.target.value=""}});
 window.addEventListener("hashchange",()=>{const r=ruta();if(r.v!=="nuevo"&&r.v!=="editar")S.edit=null});
 

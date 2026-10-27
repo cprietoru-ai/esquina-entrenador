@@ -2,6 +2,12 @@
 
 La versión en uso sale en la cabecera de la app y en Ajustes.
 
+## 1.3 · 27-oct-2026
+- Biblioteca nueva: se entra por las fases de la clase (calentamiento, físico, técnica, saco, sparring y vuelta a la calma) y por nivel.
+- Cada bloque dice en qué sesiones y planes se usa, y arriba tienes la ruta para volver (Biblioteca › Fase › Bloque › Ejercicio).
+- Ejercicios por fundamento, buscador en toda la biblioteca y un apartado «Por ordenar» con lo que no llega a ninguna clase.
+- Clases: técnica, saco y sparring son intercambiables (quita o añade fases al revisar), y el calentamiento y la vuelta a la calma rotan.
+
 ## 1.2 · 27-oct-2026
 - Nueva pestaña «Clases»: tus días de clase en un calendario, semana a semana, con lo que toca del plan.
 - En cada día: «Del plan» (su plantilla), «Generar» (una propuesta con tus bloques según la semana del plan, la última clase y tus indicaciones) o «Elegir» (copiar otra clase).
