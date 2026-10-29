@@ -2,6 +2,9 @@
 
 La versión en uso sale en la cabecera de la app y en Ajustes.
 
+## 1.3.1 · 29-oct-2026
+- Quitar una clase preparada: en la clase (o «Cambiar o quitar» en el calendario). Si aún no la mandaste, se borra; si ya está en Notion, se manda para que la Rutina la archive.
+
 ## 1.3 · 27-oct-2026
 - Biblioteca nueva: se entra por las fases de la clase (calentamiento, físico, técnica, saco, sparring y vuelta a la calma) y por nivel.
 - Cada bloque dice en qué sesiones y planes se usa, y arriba tienes la ruta para volver (Biblioteca › Fase › Bloque › Ejercicio).
